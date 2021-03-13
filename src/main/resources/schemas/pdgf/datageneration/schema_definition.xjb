@@ -1,0 +1,12 @@
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <jxb:bindings schemaLocation="./schema_definition.xsd" node="//xsd:schema">
+        <jxb:schemaBindings>
+            <jxb:package name="pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration"/>
+        </jxb:schemaBindings>
+    </jxb:bindings>
+<!--    <xjc:javaType name="java.time.LocalDate" xmlType="xs:date" adapter="com.migesok.jaxb.adapter.javatime.LocalDateXmlAdapter" />-->
+<!--    <xjc:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime" adapter="com.migesok.jaxb.adapter.javatime.LocalDateTimeXmlAdapter" />-->
+</jxb:bindings>

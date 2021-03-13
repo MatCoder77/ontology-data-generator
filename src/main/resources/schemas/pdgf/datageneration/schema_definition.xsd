@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xs:import namespace="http://www.w3.org/2001/XInclude" schemaLocation="xi.xsd"/>
+  <xs:element name="schema">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="seed"/>
+        <xs:element minOccurs="0" ref="rng"/>
+        <xs:element maxOccurs="unbounded" ref="property"/>
+        <xs:element maxOccurs="unbounded" ref="table"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="xi:include"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="seed" type="xs:NMTOKEN"/>
+  <xs:element name="rng">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="property">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="table">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="size"/>
+        <xs:element ref="xi:include"/>
+        <xs:element ref="field"/>
+      </xs:choice>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="field">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_DetailFromDate"/>
+        <xs:element ref="gen_DictList"/>
+        <xs:element ref="gen_DoubleNumber"/>
+        <xs:element ref="gen_For"/>
+        <xs:element ref="gen_FormatNumber"/>
+        <xs:element ref="gen_Formula"/>
+        <xs:element ref="gen_Id"/>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="gen_Null"/>
+        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:element ref="gen_Probability"/>
+        <xs:element ref="gen_RandomListItems"/>
+        <xs:element ref="gen_RandomSentence"/>
+        <xs:element ref="gen_RandomString"/>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_StaticValue"/>
+        <xs:element ref="gen_Template"/>
+        <xs:element ref="gen_WeightedListItem"/>
+        <xs:element ref="gen_AddRandomSeconds"/>
+        <xs:element ref="gen_ConvertNumberToString"/>
+        <xs:element ref="gen_DateTime"/>
+        <xs:element ref="gen_ExtendedFormula"/>
+        <xs:element ref="gen_If"/>
+        <xs:element ref="gen_MaskString"/>
+        <xs:element ref="gen_PermutationReference"/>
+        <xs:element ref="gen_PrePostfix"/>
+        <xs:element ref="gen_Sequential"/>
+        <xs:element ref="gen_Switch"/>
+      </xs:choice>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="nullable" type="xs:boolean"/>
+      <xs:attribute name="primary" type="xs:boolean"/>
+      <xs:attribute name="size" use="required"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute name="unique" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_AddRandomSeconds">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reference"/>
+        <xs:element ref="outputFormat"/>
+        <xs:element ref="min"/>
+        <xs:element ref="max"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_ConvertNumberToString">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="gen_Id"/>
+          <xs:element ref="gen_LongNumber"/>
+        </xs:choice>
+        <xs:element ref="size"/>
+        <xs:element ref="characters"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_DateTime">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="disableRng"/>
+        <xs:element ref="useFixedStepSize"/>
+        <xs:element minOccurs="0" ref="inputFormat"/>
+        <xs:element ref="startDate"/>
+        <xs:element ref="endDate"/>
+        <xs:element ref="outputFormat"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="useFixedStepSize" type="xs:boolean"/>
+  <xs:element name="inputFormat" type="xs:NCName"/>
+  <xs:element name="endDate" type="xs:string"/>
+  <xs:element name="gen_ExtendedFormula">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="formula"/>
+        <xs:element ref="decimalPlaces"/>
+        <xs:element minOccurs="0" ref="gen_RandomListItems"/>
+        <xs:element minOccurs="0" ref="gen_DoubleNumber"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_OtherFieldValue"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_If">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="if"/>
+        <xs:choice>
+          <xs:element ref="gen_DetailFromDate"/>
+          <xs:element ref="gen_Id"/>
+          <xs:element ref="gen_OtherFieldValue"/>
+        </xs:choice>
+        <xs:element ref="then"/>
+        <xs:element ref="else"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="if" type="xs:string"/>
+  <xs:element name="then">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_StaticValue"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="else">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_StaticValue"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_MaskString">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="mask"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mask" type="xs:string"/>
+  <xs:element name="gen_PermutationReference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="boundsCheckEnabledOverride"/>
+        <xs:element ref="reference"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="boundsCheckEnabledOverride" type="xs:integer"/>
+  <xs:element name="gen_PrePostfix">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="gen_Padding"/>
+          <xs:element ref="gen_Probability"/>
+        </xs:choice>
+        <xs:element ref="prefix"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prefix" type="xs:string"/>
+  <xs:element name="gen_Sequential">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_ReferenceValue"/>
+        <xs:element minOccurs="0" ref="gen_OtherFieldValue"/>
+        <xs:element minOccurs="0" ref="gen_Probability"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="gen_DictList"/>
+          <xs:element ref="gen_StaticValue"/>
+        </xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="gen_FormatNumber"/>
+          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="gen_Padding"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="concatenateResults" use="required" type="xs:boolean"/>
+      <xs:attribute name="delimitEmptyValues" type="xs:boolean"/>
+      <xs:attribute name="delimiter" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Switch">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:element maxOccurs="unbounded" ref="case"/>
+        <xs:element minOccurs="0" ref="default"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="case">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_Formula"/>
+        <xs:element ref="gen_StaticValue"/>
+      </xs:choice>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="default">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_OtherFieldValue"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="size" type="xs:string"/>
+  <xs:element name="gen_LongNumber">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="min"/>
+        <xs:element ref="max"/>
+        <xs:element minOccurs="0" ref="distribution"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_DetailFromDate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reference"/>
+        <xs:element ref="outputFormat"/>
+        <xs:element minOccurs="0" ref="startDate"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Probability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="sameChoiceAs"/>
+          <xs:sequence>
+            <xs:element ref="disableRng"/>
+            <xs:element ref="chunkSize"/>
+          </xs:sequence>
+        </xs:choice>
+        <xs:element maxOccurs="unbounded" ref="probability"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="chunkSize" type="xs:string"/>
+  <xs:element name="probability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="gen_BigBenchReview"/>
+          <xs:element ref="gen_For"/>
+          <xs:element ref="gen_ForFormula"/>
+          <xs:element ref="gen_Formula"/>
+          <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_StaticValue"/>
+          <xs:element ref="gen_BuildList"/>
+          <xs:element ref="gen_MarkovChainText"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="gen_Probability"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="gen_Null"/>
+          <xs:element ref="gen_ReferenceValue"/>
+          <xs:element ref="gen_Template"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_BuildList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="gen_For"/>
+        <xs:element minOccurs="0" ref="gen_ReferenceValue"/>
+      </xs:sequence>
+      <xs:attribute name="flattenSubList" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_MarkovChainText">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="min"/>
+        <xs:element ref="max"/>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_WeightedListItem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="sameChoiceAs"/>
+      </xs:sequence>
+      <xs:attribute name="filename" use="required"/>
+      <xs:attribute name="id" type="xs:NCName"/>
+      <xs:attribute name="list" use="required" type="xs:NCName"/>
+      <xs:attribute name="valueColumn" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="weightColumn" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_ReferenceValue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="strict"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="distribution"/>
+          <xs:element ref="reference"/>
+          <xs:element ref="sameChoiceAs"/>
+          <xs:element ref="useValueAsIDsource"/>
+        </xs:choice>
+        <xs:choice minOccurs="0">
+          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="samePermutationAs"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="choose" use="required" type="xs:NCName"/>
+      <xs:attribute name="from" use="required"/>
+      <xs:attribute name="id" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="strict" type="xs:boolean"/>
+  <xs:element name="useValueAsIDsource" type="xs:boolean"/>
+  <xs:element name="samePermutationAs">
+    <xs:complexType>
+      <xs:attribute name="field" use="required" type="xs:NCName"/>
+      <xs:attribute name="generatorByID" use="required" type="xs:NCName"/>
+      <xs:attribute name="table" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_OtherFieldValue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_DictList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="disableRng"/>
+          <xs:sequence>
+            <xs:element ref="unique"/>
+            <xs:element ref="size"/>
+            <xs:element ref="separator"/>
+          </xs:sequence>
+        </xs:choice>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="unique" type="xs:boolean"/>
+  <xs:element name="separator">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="gen_StaticValue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value" type="xs:string"/>
+  <xs:element name="gen_FormatNumber">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="format"/>
+      </xs:sequence>
+      <xs:attribute name="splitIntoDigits" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Padding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_ReferenceValue"/>
+          <xs:element ref="gen_Template"/>
+          <xs:element ref="gen_OldReferenceGeneratorDeprecated"/>
+        </xs:choice>
+        <xs:element ref="character"/>
+        <xs:element ref="padToLeft"/>
+        <xs:element ref="size"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_OldReferenceGeneratorDeprecated">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reference"/>
+        <xs:element minOccurs="0" ref="distribution"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="character" type="xs:string"/>
+  <xs:element name="padToLeft" type="xs:boolean"/>
+  <xs:element name="gen_Id">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="min"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_RandomListItems">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="max"/>
+          <xs:element ref="sameChoiceAs"/>
+        </xs:choice>
+        <xs:element ref="gen_ReferenceValue"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:NCName"/>
+      <xs:attribute name="singleItemAsList" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_RandomSentence">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="min"/>
+        <xs:element ref="max"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Null">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_DictList"/>
+        <xs:element ref="gen_DoubleNumber"/>
+        <xs:element ref="gen_Formula"/>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:element ref="gen_Probability"/>
+        <xs:element ref="gen_RandomListItems"/>
+        <xs:element ref="gen_RandomSentence"/>
+        <xs:element ref="gen_RandomString"/>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_StaticValue"/>
+        <xs:element ref="gen_Template"/>
+        <xs:element ref="gen_WeightedListItem"/>
+        <xs:element ref="gen_Email"/>
+      </xs:choice>
+      <xs:attribute name="probability" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Email">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+        <xs:element maxOccurs="unbounded" ref="reference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Formula">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="decimalPlaces"/>
+          <xs:element ref="formula"/>
+          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="gen_OtherFieldValue"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="gen_ReferenceValue"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_DoubleNumber">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="minD"/>
+        <xs:element ref="maxD"/>
+        <xs:element ref="decimalPlaces"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="distribution"/>
+          <xs:sequence>
+            <xs:element ref="format"/>
+            <xs:element ref="locale"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="minD" type="xs:string"/>
+  <xs:element name="maxD" type="xs:string"/>
+  <xs:element name="locale" type="xs:NCName"/>
+  <xs:element name="disableRng" type="xs:boolean"/>
+  <xs:element name="startDate" type="xs:string"/>
+  <xs:element name="outputFormat" type="xs:anyURI"/>
+  <xs:element name="gen_For">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="sameChoiceAs"/>
+          <xs:element ref="i"/>
+        </xs:choice>
+        <xs:element ref="do"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="i">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_LongNumber"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="do">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="gen_DoubleNumber"/>
+        <xs:element ref="gen_ForFormula"/>
+        <xs:element ref="gen_Formula"/>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="gen_Null"/>
+        <xs:element ref="gen_Probability"/>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_StaticValue"/>
+        <xs:element ref="gen_Relative"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_Relative">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="gen_Id"/>
+      </xs:sequence>
+      <xs:attribute name="correctionFactor" use="required"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_RandomString">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="min"/>
+        <xs:element minOccurs="0" ref="max"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="characters"/>
+          <xs:element ref="size"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formula">
+    <xs:complexType mixed="true">
+      <xs:attribute name="unlockFullAccess" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="decimalPlaces">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:integer">
+          <xs:attribute name="roundPlainValue" type="xs:integer"/>
+          <xs:attribute name="roundingMode" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="characters" type="xs:NCName"/>
+  <xs:element name="reference">
+    <xs:complexType>
+      <xs:attribute name="field" use="required" type="xs:NCName"/>
+      <xs:attribute name="id" type="xs:NCName"/>
+      <xs:attribute name="maxIDFromSchedulerPrepartitioner"/>
+      <xs:attribute name="table" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="min" type="xs:string"/>
+  <xs:element name="max" type="xs:string"/>
+  <xs:element name="gen_Template">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="nextValue"/>
+          <xs:element ref="distribution"/>
+        </xs:sequence>
+        <xs:element minOccurs="0" ref="staticValue"/>
+        <xs:element minOccurs="0" ref="getValue"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_OtherFieldValue"/>
+        <xs:choice>
+          <xs:element ref="gen_RandomString"/>
+          <xs:sequence>
+            <xs:element ref="gen_ReferenceValue"/>
+            <xs:element ref="gen_BigBenchReview"/>
+          </xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_WeightedListItem"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nextValue">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="staticValue" type="xs:string"/>
+  <xs:element name="getValue" type="xs:string"/>
+  <xs:element name="distribution">
+    <xs:complexType>
+      <xs:attribute name="mean"/>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="pk" type="xs:integer"/>
+      <xs:attribute name="ro" type="xs:decimal"/>
+      <xs:attribute name="sd"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sameChoiceAs">
+    <xs:complexType>
+      <xs:attribute name="field" use="required" type="xs:NCName"/>
+      <xs:attribute name="generatorByID" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gen_BigBenchReview">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="markovChainsPath"/>
+        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_RandomSentence"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="markovChainsPath" type="xs:string"/>
+  <xs:element name="file" type="xs:string"/>
+  <xs:element name="gen_ForFormula">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="formula"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="decimalPlaces"/>
+          <xs:element ref="gen_DoubleNumber"/>
+          <xs:element ref="gen_OtherFieldValue"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="format" type="xs:string"/>
+</xs:schema>

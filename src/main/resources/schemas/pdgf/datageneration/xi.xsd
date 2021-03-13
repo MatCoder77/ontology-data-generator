@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.w3.org/2001/XInclude">
+  <xs:import schemaLocation="schema_definition.xsd"/>
+  <xs:element name="include">
+    <xs:complexType>
+      <xs:attribute name="href" use="required"/>
+      <xs:attribute name="parse" use="required" type="xs:NCName"/>
+      <xs:attribute name="xpointer" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

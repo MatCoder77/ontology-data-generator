@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="generation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+        <xs:element ref="scheduler"/>
+        <xs:element ref="output"/>
+        <xs:element ref="schema"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="property">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:integer">
+          <xs:attribute name="name" use="required"/>
+          <xs:attribute name="type" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="schema">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tables"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tables">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="table"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="table">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="output"/>
+        <xs:element ref="scheduler"/>
+      </xs:choice>
+      <xs:attribute name="exclude" type="xs:boolean"/>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="static" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="scheduler">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="partitioner"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="partitioner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="prePartition"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="staticTableOnAllNodes" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prePartition" type="xs:string"/>
+  <xs:element name="output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="output"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="size"/>
+          <xs:sequence>
+            <xs:element ref="multilineFieldId"/>
+            <xs:element ref="interleaveMultilines"/>
+          </xs:sequence>
+        </xs:choice>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="charset"/>
+          <xs:element ref="delimiter"/>
+          <xs:element ref="delimiterAtLineEnd"/>
+          <xs:element ref="fileEnding"/>
+          <xs:element ref="fileTemplate"/>
+          <xs:element ref="outputDir"/>
+          <xs:element ref="quotationCharacter"/>
+          <xs:element ref="quoteStrings"/>
+          <xs:element ref="sortByRowID"/>
+        </xs:choice>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="header"/>
+          <xs:element ref="footer"/>
+        </xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="template"/>
+          <xs:sequence>
+            <xs:element ref="tableChangedEventTemplate"/>
+            <xs:element ref="formaterTemplate"/>
+            <xs:element ref="counterTemplate"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="active"/>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="size" type="xs:string"/>
+  <xs:element name="multilineFieldId" type="xs:integer"/>
+  <xs:element name="interleaveMultilines" type="xs:string"/>
+  <xs:element name="charset" type="xs:NCName"/>
+  <xs:element name="delimiter" type="xs:string"/>
+  <xs:element name="delimiterAtLineEnd" type="xs:boolean"/>
+  <xs:element name="fileEnding" type="xs:NMTOKEN"/>
+  <xs:element name="fileTemplate" type="xs:string"/>
+  <xs:element name="outputDir" type="xs:string"/>
+  <xs:element name="quotationCharacter" type="xs:string"/>
+  <xs:element name="quoteStrings" type="xs:boolean"/>
+  <xs:element name="sortByRowID" type="xs:string"/>
+  <xs:element name="header">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="footer">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="template">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="tableChangedEventTemplate" type="xs:string"/>
+  <xs:element name="formaterTemplate" type="xs:string"/>
+  <xs:element name="counterTemplate" type="xs:string"/>
+</xs:schema>

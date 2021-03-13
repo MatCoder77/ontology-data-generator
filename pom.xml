@@ -17,25 +17,97 @@
 		<java.version>15</java.version>
 	</properties>
 	<dependencies>
+		<!--===================================== Spring dependencies =====================================-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--=====================================  OWL dependencies  =====================================-->
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>5.1.17</version>
+		</dependency>
+		<!--=====================================     XML Binding    =====================================-->
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>jaxb2-maven-plugin</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.migesok</groupId>
+			<artifactId>jaxb-java-time-adapters</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<!--===================================== Other dependencies =====================================-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.5.0</version>
+				<executions>
+					<execution>
+						<id>generator_configuration</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<xjbSources>
+								<xjbSource>src/main/resources/schemas/pdgf/configuration/generator_configuration.xjb</xjbSource>
+							</xjbSources>
+							<sources>
+								<source>src/main/resources/schemas/pdgf/configuration/generator_configuration.xsd</source>
+							</sources>
+							<outputDirectory>${basedir}/target/generated-sources/pdgf/configuration</outputDirectory>
+							<clearOutputDir>false</clearOutputDir>
+						</configuration>
+					</execution>
+					<execution>
+						<id>xjc2</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<xjbSources>
+								<xjbSource>src/main/resources/schemas/pdgf/datageneration/schema_definition.xjb</xjbSource>
+							</xjbSources>
+							<sources>
+								<source>src/main/resources/schemas/pdgf/datageneration/schema_definition.xsd</source>
+							</sources>
+							<outputDirectory>${basedir}/target/generated-sources/pdgf/datageneration</outputDirectory>
+							<clearOutputDir>false</clearOutputDir>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

@@ -1,5 +1,6 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator;
 
-public interface DataGenerationEngine {
+public interface GenerationEngine {
+
 
 }

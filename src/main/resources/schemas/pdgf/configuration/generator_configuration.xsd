@@ -37,7 +37,7 @@
   </xs:element>
   <xs:element name="table">
     <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:choice minOccurs="0">
         <xs:element ref="output"/>
         <xs:element ref="scheduler"/>
       </xs:choice>
@@ -75,7 +75,7 @@
             <xs:element ref="interleaveMultilines"/>
           </xs:sequence>
         </xs:choice>
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:choice minOccurs="0">
           <xs:element ref="charset"/>
           <xs:element ref="delimiter"/>
           <xs:element ref="delimiterAtLineEnd"/>
@@ -114,7 +114,7 @@
   <xs:element name="outputDir" type="xs:string"/>
   <xs:element name="quotationCharacter" type="xs:string"/>
   <xs:element name="quoteStrings" type="xs:boolean"/>
-  <xs:element name="sortByRowID" type="xs:string"/>
+  <xs:element name="sortByRowID" type="xs:boolean"/>
   <xs:element name="header">
     <xs:complexType/>
   </xs:element>

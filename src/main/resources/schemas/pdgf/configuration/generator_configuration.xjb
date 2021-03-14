@@ -1,9 +1,13 @@
 <jxb:bindings version="1.0"
               xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <jxb:bindings schemaLocation="./generator_configuration.xsd" node="//xsd:schema">
         <jxb:schemaBindings>
             <jxb:package name="pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.configuration"/>
         </jxb:schemaBindings>
+        <jxb:bindings node="//xs:element[@name='generation']">
+            <jxb:class name="PDGFConfiguration"/>
+        </jxb:bindings>
     </jxb:bindings>
 </jxb:bindings>

@@ -471,7 +471,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="file"/>
-        <xs:element maxOccurs="unbounded" ref="reference"/>
+        <xs:element maxOccurs="2" ref="reference"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -6,6 +6,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyService;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.url.UrlProvider;
 
@@ -31,7 +32,7 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 		OWLOntology ontology = ontologyService.loadOntology(localUrlProvider.getUrlForResource(UNIV_BENCH_EXTEDED_QL));
 		ontologyService.validateOntology(ontology);
 		ontologyService.saveOntology(ontology, localUrlProvider.getUrlForResource("output/univ-bench2.owl"));
-		ontologyService.parseOntology(ontology);
+		OntologyContainer<OWLOntology> owlOntologyOntologyContainer = ontologyService.parseOntology(ontology);
 		log.info("Application finished successfully!");
 	}
 

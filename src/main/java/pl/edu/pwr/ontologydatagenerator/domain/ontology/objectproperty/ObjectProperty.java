@@ -1,12 +1,14 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty;
 
 import lombok.Builder;
+import lombok.Getter;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
 
 import java.util.Map;
 import java.util.Set;
 
+@Getter
 @Builder(setterPrefix = "with")
 public class ObjectProperty implements HasIdentifier {
 

@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.HermiT.ReasonerFactory;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.OWLDataPropertyService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.OWLObjectPropertyService;

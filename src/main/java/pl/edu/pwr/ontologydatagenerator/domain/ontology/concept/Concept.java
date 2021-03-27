@@ -1,6 +1,7 @@
-package pl.edu.pwr.ontologydatagenerator.domain.ontology;
+package pl.edu.pwr.ontologydatagenerator.domain.ontology.concept;
 
 import lombok.Builder;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.Instance;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;

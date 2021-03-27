@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 class OntologyDataGeneratorApplicationTests {
 
 	@Test
+	@SuppressWarnings("EmptyMethod")
 	void contextLoads() {
+
 	}
 
 }

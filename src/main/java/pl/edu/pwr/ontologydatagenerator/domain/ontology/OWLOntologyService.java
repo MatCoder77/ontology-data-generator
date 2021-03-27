@@ -1,5 +1,11 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.HermiT.ReasonerFactory;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.OWLDataPropertyService;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.OWLObjectPropertyService;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.StorageService;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.ThrowingConsumer;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -27,6 +34,8 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
     private final StorageService storageService;
     private final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
     private final OWLOntologyValidator ontologyValidator;
+    private final OWLDataPropertyService dataPropertyService;
+    private final OWLObjectPropertyService objectPropertyService;
 
     @Override
     public OWLOntology loadOntology(URI url) {
@@ -57,6 +66,25 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
     @Override
     public void validateOntology(OWLOntology ontology) {
         ontologyValidator.validate(ontology);
+    }
+
+    @Override
+    public OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
+        Collection<Concept> concepts = getConcepts(ontology);
+        return OntologyContainer.of(ontology);
+    }
+
+    private Collection<Concept> getConcepts(OWLOntology ontology) {
+        Set<OWLClass> classes = ontology.getClassesInSignature();
+        OWLDataFactory dataFactory = ontologyManager.getOWLDataFactory();
+        OWLReasoner reasoner = getResasoner(ontology);
+        List<DataProperty> dataProperties = dataPropertyService.getDataProperties(dataFactory, reasoner);
+        List<ObjectProperty> objectProperties = objectPropertyService.getObjectProperties(reasoner);
+        return null;
+    }
+
+    private OWLReasoner getResasoner(OWLOntology ontology) {
+        return new ReasonerFactory().createReasoner(ontology);
     }
 
 }

@@ -1,5 +1,6 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
+import org.semanticweb.owlapi.model.OWLDatatype;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class OWLOntologyValidator {
 
     void validate(OWLOntology owlOntology) {
         validateOntologyProfile(owlOntology);
+        validateIfOntologyContainsOnlyBuildInDatatypes(owlOntology);
     }
 
     private void validateOntologyProfile(OWLOntology ontology) {
@@ -76,6 +78,16 @@ public class OWLOntologyValidator {
                 .map(OWLProfile::getIRI)
                 .map(Profiles::valueForIRI)
                 .anyMatch(SUPPORTED_PROFILES::contains);
+    }
+
+    private void validateIfOntologyContainsOnlyBuildInDatatypes(OWLOntology ontology) {
+        ontology.getDatatypesInSignature().forEach(this::validateIfIsBuildInDatatype);
+    }
+
+    private void validateIfIsBuildInDatatype(OWLDatatype datatype) {
+        if (!datatype.isBuiltIn()) {
+            throw new IllegalStateAppException(MessageFormat.format("Ontology contains custom data type {0}. Generation of values is supported only for build in data types!", datatype));
+        }
     }
 
 }

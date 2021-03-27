@@ -37,6 +37,11 @@
 			<artifactId>owlapi-distribution</artifactId>
 			<version>5.1.17</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>org.semanticweb.hermit</artifactId>
+			<version>1.4.5.519</version>
+		</dependency>
 		<!--=====================================     XML Binding    =====================================-->
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>

@@ -1,4 +1,7 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator;
 
-public class GeneratorSelector {
+public interface GeneratorSelector {
+
+
+
 }

@@ -83,7 +83,7 @@ public class OWLDataPropertyService {
         return dataTypeRanges.stream()
                 .findAny()
                 .map(DataPropertyRange::of)
-                .orElseGet(DataPropertyRange::unknown);
+                .orElse(null);
     }
 
     private Set<Identifier> getDataPropertyEquivalentProperties(OWLDataProperty dataProperty, OWLReasoner reasoner) {

@@ -4,4 +4,8 @@ public interface HasIdentifier {
 
     Identifier getIdentifier();
 
+    default String getName() {
+        return getIdentifier().getIri().getShortForm();
+    }
+
 }

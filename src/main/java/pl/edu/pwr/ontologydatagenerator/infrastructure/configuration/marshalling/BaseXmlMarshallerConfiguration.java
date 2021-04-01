@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.infrastructure.configuration;
+package pl.edu.pwr.ontologydatagenerator.infrastructure.configuration.marshalling;
 
 import lombok.extern.slf4j.Slf4j;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
@@ -17,6 +17,7 @@ public abstract class BaseXmlMarshallerConfiguration {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.setProperty("com.sun.xml.bind.marshaller.CharacterEscapeHandler", new CdataEscapeHandler());
             return marshaller;
         } catch (JAXBException e) {
             log.error("Cannot obtain XML marschaller instance");

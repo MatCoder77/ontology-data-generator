@@ -1,10 +1,10 @@
-package pl.edu.pwr.ontologydatagenerator.infrastructure.configuration.pdgf;
+package pl.edu.pwr.ontologydatagenerator.infrastructure.configuration.marshalling.pdgf;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.edu.pwr.ontologydatagenerator.infrastructure.configuration.BaseXmlMarshallerConfiguration;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.configuration.marshalling.BaseXmlMarshallerConfiguration;
 
 import javax.xml.bind.Marshaller;
 

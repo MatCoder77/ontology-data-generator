@@ -26,12 +26,12 @@
     </xs:complexType>
   </xs:element>
   <xs:element name="table">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="size"/>
-        <xs:element ref="xi:include"/>
-        <xs:element ref="field"/>
-      </xs:choice>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="size"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="xi:include"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="field"/>
+      </xs:sequence>
       <xs:attribute name="name" use="required" type="xs:NCName"/>
     </xs:complexType>
   </xs:element>
@@ -126,12 +126,13 @@
   <xs:element name="gen_If">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="if"/>
         <xs:choice>
           <xs:element ref="gen_DetailFromDate"/>
           <xs:element ref="gen_Id"/>
           <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_LongNumber"/>
         </xs:choice>
+        <xs:element ref="if"/>
         <xs:element ref="then"/>
         <xs:element ref="else"/>
       </xs:sequence>
@@ -177,6 +178,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:choice>
+          <xs:element ref="gen_Id"/>
           <xs:element ref="gen_LongNumber"/>
           <xs:element ref="gen_Padding"/>
           <xs:element ref="gen_Probability"/>
@@ -188,20 +190,16 @@
   <xs:element name="prefix" type="xs:string"/>
   <xs:element name="gen_Sequential">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_ReferenceValue"/>
-        <xs:element minOccurs="0" ref="gen_OtherFieldValue"/>
-        <xs:element minOccurs="0" ref="gen_Probability"/>
-        <xs:sequence minOccurs="0">
-          <xs:element ref="gen_DictList"/>
-          <xs:element ref="gen_StaticValue"/>
-        </xs:sequence>
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
-          <xs:element ref="gen_FormatNumber"/>
-          <xs:element ref="gen_LongNumber"/>
-          <xs:element ref="gen_Padding"/>
-        </xs:choice>
-      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:element ref="gen_Probability"/>
+        <xs:element ref="gen_DictList"/>
+        <xs:element ref="gen_StaticValue"/>
+        <xs:element ref="gen_FormatNumber"/>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="gen_Padding"/>
+      </xs:choice>
       <xs:attribute name="concatenateResults" use="required" type="xs:boolean"/>
       <xs:attribute name="delimitEmptyValues" type="xs:boolean"/>
       <xs:attribute name="delimiter" type="xs:NMTOKEN"/>
@@ -210,7 +208,10 @@
   <xs:element name="gen_Switch">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="gen_OtherFieldValue"/>
+        <xs:choice>
+          <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_LongNumber"/>
+        </xs:choice>
         <xs:element maxOccurs="unbounded" ref="case"/>
         <xs:element minOccurs="0" ref="default"/>
       </xs:sequence>
@@ -222,7 +223,7 @@
         <xs:element ref="gen_Formula"/>
         <xs:element ref="gen_StaticValue"/>
       </xs:choice>
-      <xs:attribute name="value" use="required" type="xs:integer"/>
+      <xs:attribute name="value" use="required" type="xs:long"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="default">
@@ -232,7 +233,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="size" type="xs:string"/>
+  <xs:element name="size" type="xs:int"/>
   <xs:element name="gen_LongNumber">
     <xs:complexType>
       <xs:sequence>
@@ -240,6 +241,8 @@
         <xs:element ref="max"/>
         <xs:element minOccurs="0" ref="distribution"/>
       </xs:sequence>
+      <xs:attribute name="unique" type="xs:boolean"/>
+      <xs:attribute name="distinct" type="xs:long"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="gen_DetailFromDate">
@@ -359,22 +362,17 @@
   <xs:element name="gen_DictList">
     <xs:complexType>
       <xs:sequence>
-        <xs:choice minOccurs="0">
-          <xs:element ref="disableRng"/>
-          <xs:sequence>
-            <xs:element ref="unique"/>
-            <xs:element ref="size"/>
-            <xs:element ref="separator"/>
-          </xs:sequence>
-        </xs:choice>
+        <xs:element minOccurs="0" ref="disableRng"/>
+        <xs:element minOccurs="0" ref="unique"/>
+        <xs:element minOccurs="0" ref="size"/>
+        <xs:element minOccurs="0" ref="separator"/>
+        <xs:element minOccurs="0" ref="distribution"/>
         <xs:element ref="file"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="unique" type="xs:boolean"/>
-  <xs:element name="separator">
-    <xs:complexType/>
-  </xs:element>
+  <xs:element name="separator" type="xs:string"/>
   <xs:element name="gen_StaticValue">
     <xs:complexType>
       <xs:sequence>
@@ -443,6 +441,7 @@
       <xs:sequence>
         <xs:element ref="min"/>
         <xs:element ref="max"/>
+        <xs:element minOccurs="0" ref="distribution"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -504,8 +503,8 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="minD" type="xs:string"/>
-  <xs:element name="maxD" type="xs:string"/>
+  <xs:element name="minD" type="xs:double"/>
+  <xs:element name="maxD" type="xs:double"/>
   <xs:element name="locale" type="xs:NCName"/>
   <xs:element name="disableRng" type="xs:boolean"/>
   <xs:element name="startDate" type="xs:string"/>
@@ -573,8 +572,8 @@
   <xs:element name="decimalPlaces">
     <xs:complexType>
       <xs:simpleContent>
-        <xs:extension base="xs:integer">
-          <xs:attribute name="roundPlainValue" type="xs:integer"/>
+        <xs:extension base="xs:int">
+          <xs:attribute name="roundPlainValue" type="xs:boolean"/>
           <xs:attribute name="roundingMode" type="xs:NCName"/>
         </xs:extension>
       </xs:simpleContent>
@@ -589,8 +588,8 @@
       <xs:attribute name="table" type="xs:NCName"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="min" type="xs:string"/>
-  <xs:element name="max" type="xs:string"/>
+  <xs:element name="min" type="xs:long"/>
+  <xs:element name="max" type="xs:long"/>
   <xs:element name="gen_Template">
     <xs:complexType>
       <xs:sequence>
@@ -600,14 +599,13 @@
         </xs:sequence>
         <xs:element minOccurs="0" ref="staticValue"/>
         <xs:element minOccurs="0" ref="getValue"/>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_OtherFieldValue"/>
-        <xs:choice>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_RandomSentence"/>
           <xs:element ref="gen_RandomString"/>
-          <xs:sequence>
-            <xs:element ref="gen_ReferenceValue"/>
-            <xs:element ref="gen_BigBenchReview"/>
-          </xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="gen_WeightedListItem"/>
+          <xs:element ref="gen_ReferenceValue"/>
+          <xs:element ref="gen_BigBenchReview"/>
+          <xs:element ref="gen_WeightedListItem"/>
         </xs:choice>
       </xs:sequence>
     </xs:complexType>
@@ -619,11 +617,17 @@
   <xs:element name="getValue" type="xs:string"/>
   <xs:element name="distribution">
     <xs:complexType>
-      <xs:attribute name="mean"/>
+      <xs:attribute name="id" type="xs:NCName"/>
       <xs:attribute name="name" use="required" type="xs:NCName"/>
-      <xs:attribute name="pk" type="xs:integer"/>
-      <xs:attribute name="ro" type="xs:decimal"/>
-      <xs:attribute name="sd"/>
+      <xs:attribute name="alpha" type="xs:double"/>
+      <xs:attribute name="beta" type="xs:double"/>
+      <xs:attribute name="n" type="xs:long"/>
+      <xs:attribute name="p" type="xs:double"/>
+      <xs:attribute name="lambda" type="xs:double"/>
+      <xs:attribute name="mean" type="xs:double"/>
+      <xs:attribute name="sd" type="xs:double"/>
+      <xs:attribute name="ro" type="xs:double"/>
+      <xs:attribute name="pk" type="xs:double"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="sameChoiceAs">

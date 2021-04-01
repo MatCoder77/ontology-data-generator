@@ -9,6 +9,15 @@
         <jxb:bindings node="//xs:element[@name='schema']">
             <jxb:class name="PDGFSchemaDefinition"/>
         </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='gen_Sequential']//xs:complexType//xs:choice">
+            <jxb:property name="generators"/>
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='gen_Template']//xs:complexType//xs:choice">
+            <jxb:property name="generators"/>
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='field']//xs:complexType//xs:choice">
+            <jxb:property name="generator"/>
+        </jxb:bindings>
     </jxb:bindings>
 <!--    <xjc:javaType name="java.time.LocalDate" xmlType="xs:date" adapter="com.migesok.jaxb.adapter.javatime.LocalDateXmlAdapter" />-->
 <!--    <xjc:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime" adapter="com.migesok.jaxb.adapter.javatime.LocalDateTimeXmlAdapter" />-->

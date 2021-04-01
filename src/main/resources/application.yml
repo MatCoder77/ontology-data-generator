@@ -1,0 +1,20 @@
+app:
+  generator:
+    pdgf:
+      datageneration:
+        property:
+          __long__test__:
+            distribution:
+              type: Beta
+              beta: 2.0
+              alpha: 1.9977
+        dictionaries:
+          -
+            url: /home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/xsd_language_dict.txt
+            supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_LANGUAGE
+              - RDF_LANG_STRING
+            keywords:
+              - language tag
+              - keyword2

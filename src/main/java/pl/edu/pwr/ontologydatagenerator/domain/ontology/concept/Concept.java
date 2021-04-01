@@ -1,5 +1,6 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology.concept;
 
+import com.google.common.base.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
@@ -24,6 +25,19 @@ public class Concept implements HasIdentifier {
     @Override
     public Identifier getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Concept)) return false;
+        Concept concept = (Concept) o;
+        return Objects.equal(identifier, concept.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(identifier);
     }
 
 }

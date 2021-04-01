@@ -1,9 +1,11 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier;
 
+import lombok.Getter;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.util.Objects;
 
+@Getter
 public class Identifier {
 
     private final IRI iri;

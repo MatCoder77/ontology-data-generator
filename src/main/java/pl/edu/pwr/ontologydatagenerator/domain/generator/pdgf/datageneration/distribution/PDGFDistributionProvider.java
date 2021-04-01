@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PDGFDistributionProvider implements DistributionProvider {
+public class PDGFDistributionProvider implements DistributionProvider<Distribution> {
 
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_TYPE = "app.generator.pdgf.datageneration.property.{0}.distribution.type";
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_BETA = "app.generator.pdgf.datageneration.property.{0}.distribution.beta";

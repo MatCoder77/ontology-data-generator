@@ -2,7 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenDateTime;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;

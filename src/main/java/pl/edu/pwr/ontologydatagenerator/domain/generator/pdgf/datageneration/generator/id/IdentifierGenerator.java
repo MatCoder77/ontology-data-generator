@@ -3,7 +3,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenId;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenPrePostfix;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 
 import java.util.Collections;

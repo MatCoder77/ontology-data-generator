@@ -1,7 +1,7 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.id;
 
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 
 import java.util.Collections;
 import java.util.Set;

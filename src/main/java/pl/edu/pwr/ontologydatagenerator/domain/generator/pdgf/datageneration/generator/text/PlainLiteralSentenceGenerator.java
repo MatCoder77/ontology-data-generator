@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenSequential;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenStaticValue;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.dictionary.DictionaryGenerator;
 
 import java.net.URI;

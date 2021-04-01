@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.DecimalPlaces;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenDoubleNumber;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 
 import java.util.Set;
 

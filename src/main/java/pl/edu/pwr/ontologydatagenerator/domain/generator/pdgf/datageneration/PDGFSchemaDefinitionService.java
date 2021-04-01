@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.SchemaDefinitonService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.dictionary.DictionaryDataProvider;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.field.FieldType;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.Base64Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.HexadecimalGenerator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.id.IdentifierGenerator;
@@ -42,12 +42,10 @@ public class PDGFSchemaDefinitionService implements SchemaDefinitonService<PDGFS
     @Value("${app.generator.pdgf.datageneration.seed}") private final String seed;
     @Value("${app.generator.pdgf.datageneration.rng}") private final String randomNumberGenerator;
     @Value("${app.generator.pdgf.datageneration.scalefactor}") private final String scaleFactor;
-    private final DistributionProvider distributionProvider;
-    private final DictionaryDataProvider dictionaryDataProvider;
+    private final DistributionProvider<Distribution> distributionProvider;
 
     @Override
     public PDGFSchemaDefinition buildSchemaDefinition(OntologyContainer<OWLOntology> ontologyContainer) {
-        List<Dictionary> dictionaries = dictionaryDataProvider.getDictionaries();
         return new PDGFSchemaDefinition()
                 .withName(name)
                 .withSeed(seed)

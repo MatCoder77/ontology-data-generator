@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration;
+package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.field;
 
 public enum FieldType {
 

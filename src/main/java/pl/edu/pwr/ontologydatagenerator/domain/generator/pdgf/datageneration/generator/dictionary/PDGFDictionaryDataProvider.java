@@ -5,7 +5,8 @@ import lombok.Setter;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Dictionary;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.DictionaryDataProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "app.generator.pdgf.datageneration")
-public class DictionaryDataProvider {
+public class PDGFDictionaryDataProvider implements DictionaryDataProvider {
 
     private List<Dictionary> dictionaries;
 

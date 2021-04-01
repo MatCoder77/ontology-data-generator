@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.SchemaDefinitonService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFDataGenerationResult;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFSchemaDefinition;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;

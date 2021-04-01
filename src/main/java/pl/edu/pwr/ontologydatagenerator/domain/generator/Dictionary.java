@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration;
+package pl.edu.pwr.ontologydatagenerator.domain.generator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

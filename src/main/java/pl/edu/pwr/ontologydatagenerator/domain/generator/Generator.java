@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator;
+package pl.edu.pwr.ontologydatagenerator.domain.generator;
 
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 

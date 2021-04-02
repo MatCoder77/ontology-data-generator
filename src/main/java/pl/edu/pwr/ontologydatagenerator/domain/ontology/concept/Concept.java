@@ -40,4 +40,12 @@ public class Concept implements HasIdentifier {
         return Objects.hashCode(identifier);
     }
 
+    public boolean isThing() {
+        return identifier.getIri().isThing();
+    }
+
+    public boolean isNothing() {
+        return identifier.getIri().isNothing();
+    }
+
 }

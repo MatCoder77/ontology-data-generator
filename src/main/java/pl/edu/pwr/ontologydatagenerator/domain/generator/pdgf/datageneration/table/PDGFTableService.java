@@ -30,13 +30,16 @@ public class PDGFTableService {
 
     private List<Concept> getConceptsToInstantiate(OntologyContainer<OWLOntology> ontologyContainer) {
         return ontologyContainer.getConcepts().values().stream()
-                .filter(concept -> shouldConnceptBeInstantiated(concept, ontologyContainer))
+                .filter(concept -> shouldConnceptBeInstantiated(concept))
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("SameReturnValue")
-    private boolean shouldConnceptBeInstantiated(Concept concept, OntologyContainer<OWLOntology> ontologyContainer) {
-        return true; //TODO: implement instatntion only for non-abstract concepts
+    private boolean shouldConnceptBeInstantiated(Concept concept) {
+        return !isThingOrNothing(concept);
+    }
+
+    private boolean isThingOrNothing(Concept concept) {
+        return concept.isThing() || concept.isNothing();
     }
 
     private Table getTable(Concept concept, OntologyContainer<OWLOntology> container) {

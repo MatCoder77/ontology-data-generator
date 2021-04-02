@@ -1,10 +1,11 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.field;
 
 import lombok.RequiredArgsConstructor;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.springframework.stereotype.Service;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Field;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.PDGFGeneratorService;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.Base64Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.HexadecimalGenerator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.id.IdentifierGenerator;
@@ -28,9 +29,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PDGFFieldService {
 
-    private final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-    private final OWLDataFactory dataFactory = ontologyManager.getOWLDataFactory();
     private final FieldTypeProvider fieldTypeProvider;
+    private final PDGFGeneratorService generatorService;
 
     public List<Field> getFields(Concept concept, OntologyContainer<OWLOntology> container) {
         //return getTestFileds(concept);
@@ -67,13 +67,16 @@ public class PDGFFieldService {
     private Field getField(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
         return new Field()
                 .withName(dataProperty.getName())
-                .withType(getFieldType(dataProperty));
-                //.withSize()
-                //.withGenerator();
+                .withType(getFieldType(dataProperty))
+                .withGenerator(getGenerator(dataProperty, concept, container));
     }
 
     private String getFieldType(DataProperty dataProperty) {
         return fieldTypeProvider.getFieldType(dataProperty).name();
+    }
+
+    private Generator getGenerator(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
+        return generatorService.getGenerator(dataProperty, concept, container);
     }
 
     private List<Field> getTestFileds(Concept concept) {
@@ -132,9 +135,9 @@ public class PDGFFieldService {
                 .collect(Collectors.toList());
     }
 
-    private List<DataProperty> getObjectPropertiesToInstatiate(Concept concept, OntologyContainer<OWLOntology> container) {
-        return concept.getDataProperties().values().stream()
-                .filter(dataProperty -> shouldPropertyBeInstantiated(dataProperty, concept, container))
+    private List<ObjectProperty> getObjectPropertiesToInstatiate(Concept concept, OntologyContainer<OWLOntology> container) {
+        return concept.getObjectProperties().values().stream()
+                .filter(objectProperty -> shouldPropertyBeInstantiated(objectProperty, concept, container))
                 .collect(Collectors.toList());
     }
 

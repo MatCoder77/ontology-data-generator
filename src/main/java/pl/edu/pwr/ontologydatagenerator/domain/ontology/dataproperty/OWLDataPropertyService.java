@@ -1,7 +1,9 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -18,24 +20,25 @@ import java.util.stream.Collectors;
 public class OWLDataPropertyService {
 
     private final IdentifierMapper identifierMapper;
+    private final OWLDataFactory dataFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
 
-    public List<DataProperty> getDataProperties(OWLDataFactory dataFactory, OWLReasoner reasoner) {
+    public List<DataProperty> getDataProperties(OWLReasoner reasoner) {
         Set<OWLDataProperty> dataProperties = reasoner.getRootOntology().getDataPropertiesInSignature();
         Set<OWLNamedIndividual> individuals = reasoner.getRootOntology().getIndividualsInSignature();
         return dataProperties.stream()
-                .map(dataProperty -> getDataProperty(dataProperty, individuals, dataFactory, reasoner))
+                .map(dataProperty -> getDataProperty(dataProperty, individuals, reasoner))
                 .collect(Collectors.toList());
     }
 
-    private DataProperty getDataProperty(OWLDataProperty dataProperty, Collection<OWLNamedIndividual> individuals, OWLDataFactory dataFactory, OWLReasoner reasoner) {
+    private DataProperty getDataProperty(OWLDataProperty dataProperty, Collection<OWLNamedIndividual> individuals, OWLReasoner reasoner) {
         Identifier identifier = identifierMapper.mapToIdentifier(dataProperty);
         DataPropertyDomain domain = getDataPropertyDomain(dataProperty, reasoner);
-        DataPropertyRange range = getDataPropertyRange(dataProperty, dataFactory, reasoner);
+        Map<Identifier, Set<OWLLiteral>> valuesByIndividualIdentifier = getValuesByIndividualIdentifier(dataProperty, individuals, reasoner);
+        DataPropertyRange range = getDataPropertyRange(dataProperty, valuesByIndividualIdentifier.values(), reasoner);
         Set<Identifier> equivalentProperties = getDataPropertyEquivalentProperties(dataProperty, reasoner);
         Set<Identifier> disjointProperties = getDataPropertyDisjointProperties(dataProperty, reasoner);
         Set<Identifier> superProperties = getDataPropertySuperProperties(dataProperty, reasoner);
         Set<Identifier> subProperties = getDataPropertySubProperties(dataProperty, reasoner);
-        Map<Identifier, Set<OWLLiteral>> valuesByIndividualIdentifier = getValuesByIndividualIdentifier(dataProperty, individuals, reasoner);
         boolean isFunctional = isFunctionalDataProperty(dataProperty, reasoner.getRootOntology());
         return DataProperty.builder()
                 .withIdentifier(identifier)
@@ -72,7 +75,7 @@ public class OWLDataPropertyService {
         return identifierMapper.mapToIdentifiers(allDomainClasses, HashSet::new);
     }
 
-    private DataPropertyRange getDataPropertyRange(OWLDataProperty dataProperty, OWLDataFactory dataFactory, OWLReasoner reasoner) {
+    private DataPropertyRange getDataPropertyRange(OWLDataProperty dataProperty, Collection<Set<OWLLiteral>> valuesFromIndividuals, OWLReasoner reasoner) {
         List<OWLDataRange> dataTypeRanges = reasoner.getRootOntology().getDataPropertyRangeAxioms(dataProperty).stream()
                 .map(OWLDataPropertyRangeAxiom::getRange)
                 .collect(Collectors.toList());
@@ -83,7 +86,25 @@ public class OWLDataPropertyService {
         return dataTypeRanges.stream()
                 .findAny()
                 .map(DataPropertyRange::of)
-                .orElse(null);
+                .orElseGet(() -> inferDataPropertyRange(valuesFromIndividuals));
+    }
+
+    private DataPropertyRange inferDataPropertyRange(Collection<Set<OWLLiteral>> valuesFromIndividuals) {
+        Set<IRI> datatypesIrisFromLiterals = getDatatypesFromLiterals(valuesFromIndividuals);
+        return Optional.of(datatypesIrisFromLiterals)
+                .filter(datatypes -> datatypes.size() == 1)
+                .map(Iterables::getOnlyElement)
+                .map(dataFactory::getOWLDatatype)
+                .map(DataPropertyRange::of)
+                .orElseGet(() -> DataPropertyRange.of(dataFactory.getTopDatatype()));
+    }
+
+    private Set<IRI> getDatatypesFromLiterals(Collection<Set<OWLLiteral>> valuesFromIndividuals) {
+        return valuesFromIndividuals.stream()
+                .flatMap(Collection::stream)
+                .map(OWLLiteral::getDatatype)
+                .map(OWLDatatype::getIRI)
+                .collect(Collectors.toSet());
     }
 
     private Set<Identifier> getDataPropertyEquivalentProperties(OWLDataProperty dataProperty, OWLReasoner reasoner) {

@@ -14,7 +14,7 @@ public class DictionaryGenerator extends GenDictList implements Generator {
         this.file = dictionaryUrl.getPath();
         this.separator = "|";
         this.unique = true;
-        this.size = numberOfValuesPerRow;
+        this.size = String.valueOf(numberOfValuesPerRow);
         this.distribution = distribution;
     }
 

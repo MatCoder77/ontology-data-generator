@@ -8,7 +8,6 @@ import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Getter
@@ -30,8 +29,8 @@ public class DataProperty implements HasIdentifier {
         return identifier;
     }
 
-    public Optional<DataPropertyRange> getRange() {
-        return Optional.ofNullable(range);
+    public DataPropertyRange getRange() {
+        return range;
     }
 
     @Override

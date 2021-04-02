@@ -11,13 +11,9 @@ import java.util.Set;
 
 public class IdentifierGenerator extends GenPrePostfix implements Generator {
 
-    private IdentifierGenerator(HasIdentifier objectWithIdentifer) {
+    public IdentifierGenerator(HasIdentifier objectWithIdentifer) {
         this.prefix = objectWithIdentifer.getName();
         this.genId = getDefaltIdGenerator();
-    }
-
-    public static IdentifierGenerator of(HasIdentifier objectWithIdentifier) {
-        return new IdentifierGenerator(objectWithIdentifier);
     }
 
     private GenId getDefaltIdGenerator() {

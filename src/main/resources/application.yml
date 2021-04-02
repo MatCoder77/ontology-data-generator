@@ -2,7 +2,9 @@ app:
   generator:
     pdgf:
       datageneration:
-        property:
+        tables:
+          baseSize: 10
+        properties:
           __long__test__:
             distribution:
               type: Beta

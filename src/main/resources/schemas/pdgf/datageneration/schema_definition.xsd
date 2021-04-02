@@ -233,7 +233,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="size" type="xs:int"/>
+  <xs:element name="size" type="xs:string"/>
   <xs:element name="gen_LongNumber">
     <xs:complexType>
       <xs:sequence>

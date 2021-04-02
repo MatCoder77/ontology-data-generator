@@ -18,16 +18,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PDGFDistributionProvider implements DistributionProvider<Distribution> {
 
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_TYPE = "app.generator.pdgf.datageneration.property.{0}.distribution.type";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_BETA = "app.generator.pdgf.datageneration.property.{0}.distribution.beta";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_ALPHA = "app.generator.pdgf.datageneration.property.{0}.distribution.alpha";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_N = "app.generator.pdgf.datageneration.property.{0}.distribution.n";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_P = "app.generator.pdgf.datageneration.property.{0}.distribution.p";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_LAMBDA = "app.generator.pdgf.datageneration.property.{0}.distribution.lambda";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_MEAN = "app.generator.pdgf.datageneration.property.{0}.distribution.mean";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_SD = "app.generator.pdgf.datageneration.property.{0}.distribution.sd";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_PK = "app.generator.pdgf.datageneration.property.{0}.distribution.pk";
-    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_RO = "app.generator.pdgf.datageneration.property.{0}.distribution.ro";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_TYPE = "app.generator.pdgf.datageneration.properties.{0}.distribution.type";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_BETA = "app.generator.pdgf.datageneration.properties.{0}.distribution.beta";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_ALPHA = "app.generator.pdgf.datageneration.properties.{0}.distribution.alpha";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_N = "app.generator.pdgf.datageneration.properties.{0}.distribution.n";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_P = "app.generator.pdgf.datageneration.properties.{0}.distribution.p";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_LAMBDA = "app.generator.pdgf.datageneration.properties.{0}.distribution.lambda";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_MEAN = "app.generator.pdgf.datageneration.properties.{0}.distribution.mean";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_SD = "app.generator.pdgf.datageneration.properties.{0}.distribution.sd";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_PK = "app.generator.pdgf.datageneration.properties.{0}.distribution.pk";
+    private static final String PROPERTY_TEMPLATE_DISTRIBUTION_RO = "app.generator.pdgf.datageneration.properties.{0}.distribution.ro";
 
     private final Environment environment;
 

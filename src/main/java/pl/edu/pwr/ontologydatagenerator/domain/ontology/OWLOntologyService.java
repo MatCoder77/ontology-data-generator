@@ -76,9 +76,8 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
 
     @Override
     public OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
-        OWLDataFactory dataFactory = ontologyManager.getOWLDataFactory();
         OWLReasoner reasoner = getResasoner(ontology);
-        List<DataProperty> dataProperties = dataPropertyService.getDataProperties(dataFactory, reasoner);
+        List<DataProperty> dataProperties = dataPropertyService.getDataProperties(reasoner);
         List<ObjectProperty> objectProperties = objectPropertyService.getObjectProperties(reasoner);
         List<Concept> concepts = conceptService.parseConcepts(dataProperties, objectProperties, reasoner);
         return OntologyContainer.<OWLOntology>builder()

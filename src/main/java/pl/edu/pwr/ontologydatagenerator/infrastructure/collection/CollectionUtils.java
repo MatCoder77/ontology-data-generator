@@ -2,10 +2,10 @@ package pl.edu.pwr.ontologydatagenerator.infrastructure.collection;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +35,11 @@ public class CollectionUtils {
         return Stream.of(List.of(element), Arrays.stream(collections).flatMap(Collection::stream).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toCollection(collectionFactory));
+    }
+
+    public static <T> Predicate<T> distinctBy(Function<? super T, Collection<?>> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.addAll(keyExtractor.apply(t));
     }
 
 }

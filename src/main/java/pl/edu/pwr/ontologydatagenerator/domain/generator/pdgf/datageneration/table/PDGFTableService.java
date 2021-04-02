@@ -8,6 +8,7 @@ import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Tab
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.field.PDGFFieldService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.collection.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -30,6 +31,7 @@ public class PDGFTableService {
 
     private List<Concept> getConceptsToInstantiate(OntologyContainer<OWLOntology> ontologyContainer) {
         return ontologyContainer.getConcepts().values().stream()
+                .filter(CollectionUtils.distinctBy(Concept::getEquivalentConcepts))
                 .filter(concept -> shouldConnceptBeInstantiated(concept))
                 .collect(Collectors.toList());
     }

@@ -55,6 +55,7 @@ public class PDGFFieldService {
 
     private List<DataProperty> getDataPropertiesToInstatiate(Concept concept, OntologyContainer<OWLOntology> container) {
         return concept.getDataProperties().values().stream()
+                .filter(CollectionUtils.distinctBy(DataProperty::getEquivalentProperties))
                 .filter(dataProperty -> shouldPropertyBeInstantiated(dataProperty, concept, container))
                 .collect(Collectors.toList());
     }

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 
 import java.util.Set;
 
@@ -15,9 +15,9 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 @Service
 @RequiredArgsConstructor
-public class BooleanGeneratorProducer implements GeneratorProducer {
+public class BooleanGeneratorProducer implements DataPropertyGeneratorProducer {
 
-    private final DistributionProvider<GenerationContext, Distribution> distributionProvider;
+    private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -25,7 +25,7 @@ public class BooleanGeneratorProducer implements GeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         return new BooleanGenerator(distributionProvider.getDistribution(generationContext));
     }
     

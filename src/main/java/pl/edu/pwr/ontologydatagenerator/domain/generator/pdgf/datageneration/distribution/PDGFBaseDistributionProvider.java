@@ -1,11 +1,10 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.distribution;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 
@@ -14,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PDGFDistributionProvider implements DistributionProvider<GenerationContext, Distribution> {
+public class PDGFBaseDistributionProvider {
 
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_TYPE = "app.generator.pdgf.datageneration.properties.{0}.distribution.type";
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_BETA = "app.generator.pdgf.datageneration.properties.{0}.distribution.beta";
@@ -29,86 +28,82 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
 
     private final Environment environment;
 
-    @Override
-    public Distribution getDistribution(GenerationContext context) {
-        return getDistributionBasedOnConfigurationOrDefault(context.getDataProperty());
-    }
-
-    private Distribution getDistributionBasedOnConfigurationOrDefault(HasIdentifier property) {
+    Distribution getDistributionBasedOnConfigurationOrDefault(HasIdentifier property) {
         return getPropertyValue(property, PROPERTY_TEMPLATE_DISTRIBUTION_TYPE, DistributionType.class, environment)
                 .map(distributionType -> distributionType.getDistributionBasedOnConfiguration(property, environment))
-                .orElseGet(PDGFDistributionProvider::getUniformDistribution);
+                .orElseGet(PDGFBaseDistributionProvider::getUniformDistribution);
     }
 
-    private static <T> T requirePropertyValue(HasIdentifier property, String propertyTemplate, Class<T> targetClass, Environment environment) {
+    static <T> T requirePropertyValue(HasIdentifier property, String propertyTemplate, Class<T> targetClass, Environment environment) {
         return getPropertyValue(property, propertyTemplate, targetClass, environment)
                 .orElseThrow(() -> new IllegalStateAppException(MessageFormat.format("Property {0} not defined", MessageFormat.format(propertyTemplate, property.getName()))));
     }
 
-    private static <T> Optional<T> getPropertyValue(HasIdentifier property, String propertyTemplate, Class<T> targetClass, Environment environment) {
+    static <T> Optional<T> getPropertyValue(HasIdentifier property, String propertyTemplate, Class<T> targetClass, Environment environment) {
         return Optional.ofNullable(environment.getProperty(MessageFormat.format(propertyTemplate, property.getName()), targetClass));
     }
 
     @SuppressWarnings("SameReturnValue")
-    private static Distribution getUniformDistribution() {
+    static Distribution getUniformDistribution() {
         return null;
     }
 
-    private static Distribution getBetaDistribution(double alpha, double beta) {
+    static Distribution getBetaDistribution(double alpha, double beta) {
         return new Distribution()
-                .withName(DistributionType.Beta.name())
+                .withName(DistributionType.BETA.getValue())
                 .withAlpha(alpha)
                 .withBeta(beta);
     }
 
-    private static Distribution getBinomialDistribution(long n, double p) {
+    static Distribution getBinomialDistribution(long n, double p) {
         return new Distribution()
-                .withName(DistributionType.Binomial.name())
+                .withName(DistributionType.BINOMIAL.getValue())
                 .withN(n)
                 .withP(p);
     }
 
-    private static Distribution getExponentialDistribution(double lambda) {
+    static Distribution getExponentialDistribution(double lambda) {
         return new Distribution()
-                .withName(DistributionType.Exponential.name())
+                .withName(DistributionType.EXPONENTIAL.getValue())
                 .withLambda(lambda);
     }
 
-    private static Distribution getLogarithmicDistribution(double p) {
+    static Distribution getLogarithmicDistribution(double p) {
         return new Distribution()
-                .withName(DistributionType.Logarithmic.name())
+                .withName(DistributionType.LOGARITHIMIC.getValue())
                 .withP(p);
     }
 
-    private static Distribution getLogNormalFastDistribution(double mean, double sd) {
+    static Distribution getLogNormalFastDistribution(double mean, double sd) {
         return new Distribution()
-                .withName(DistributionType.LogNormalFast.name())
+                .withName(DistributionType.LONG_NORMAL_FAST.getValue())
                 .withMean(mean)
                 .withSd(sd);
     }
 
-    private static Distribution getNormalDistribution(double mean, double sd) {
+    static Distribution getNormalDistribution(double mean, double sd) {
         return new Distribution()
-                .withName(DistributionType.Normal.name())
+                .withName(DistributionType.NORMAL.getValue())
                 .withMean(mean)
                 .withSd(sd);
     }
 
-    private static Distribution getZetaDistribution(double pk, double ro)  {
+    static Distribution getZetaDistribution(double pk, double ro)  {
         return new Distribution()
-                .withName(DistributionType.Zeta.name())
+                .withName(DistributionType.ZETA.getValue())
                 .withPk(pk)
                 .withRo(ro);
     }
 
+    @Getter
     enum DistributionType {
-        Uniform {
+        UNIFORM("Uniform") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 return getUniformDistribution();
             }
         },
-        Beta {
+        BETA("Beta") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double alpha = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_ALPHA, Double.class, environment);
@@ -116,7 +111,7 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
                 return getBetaDistribution(alpha, beta);
             }
         },
-        Binomial {
+        BINOMIAL("Binomial") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 long n = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_N, Long.class, environment);
@@ -124,21 +119,21 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
                 return getBinomialDistribution(n, p);
             }
         },
-        Exponential {
+        EXPONENTIAL("Exponential") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double lambda = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_LAMBDA, Double.class, environment);
                 return getExponentialDistribution(lambda);
             }
         },
-        Logarithmic {
+        LOGARITHIMIC("Logarithmic") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double p = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_P, Double.class, environment);
                 return getLogarithmicDistribution(p);
             }
         },
-        LogNormalFast {
+        LONG_NORMAL_FAST("LogNormalFast") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double mean = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_MEAN, Double.class, environment);
@@ -146,7 +141,7 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
                 return getLogNormalFastDistribution(mean, sd);
             }
         },
-        Normal {
+        NORMAL("Normal") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double mean = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_MEAN, Double.class, environment);
@@ -154,7 +149,7 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
                 return getNormalDistribution(mean, sd);
             }
         },
-        Zeta {
+        ZETA("Zeta") {
             @Override
             Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment) {
                 double pk = requirePropertyValue(identifier, PROPERTY_TEMPLATE_DISTRIBUTION_PK, Double.class, environment);
@@ -162,6 +157,12 @@ public class PDGFDistributionProvider implements DistributionProvider<Generation
                 return getZetaDistribution(pk, ro);
             }
         };
+
+        private final String value;
+
+        DistributionType(String value) {
+            this.value = value;
+        }
 
         abstract Distribution getDistributionBasedOnConfiguration(HasIdentifier identifier, Environment environment);
     }

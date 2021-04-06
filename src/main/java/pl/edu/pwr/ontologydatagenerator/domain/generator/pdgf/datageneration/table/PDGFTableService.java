@@ -11,6 +11,7 @@ import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.collection.CollectionUtils;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +25,9 @@ public class PDGFTableService {
     private final PDGFFieldService fieldService;
 
     public List<Table> getTables(OntologyContainer<OWLOntology> ontologyContainer) {
-        return getConceptsToInstantiate(ontologyContainer).stream()
-                .map(concept -> getTable(concept, ontologyContainer))
+        List<Concept> conceptsToInstantiate = getConceptsToInstantiate(ontologyContainer);
+        return conceptsToInstantiate.stream()
+                .map(concept -> getTable(concept, conceptsToInstantiate, ontologyContainer))
                 .collect(Collectors.toList());
     }
 
@@ -44,11 +46,11 @@ public class PDGFTableService {
         return concept.isThing() || concept.isNothing();
     }
 
-    private Table getTable(Concept concept, OntologyContainer<OWLOntology> container) {
+    private Table getTable(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
         return new Table()
                 .withName(concept.getName())
                 .withSize(getTableSize())
-                .withField(fieldService.getFields(concept, container));
+                .withField(fieldService.getFields(concept, conceptsToInstatniate, container));
     }
 
     private String getTableSize() {

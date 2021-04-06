@@ -66,7 +66,7 @@ public class OWLConceptService {
 
     private Set<Identifier> getEquivalentConcepts(OWLClass concept, OWLReasoner reasoner) {
         Set<OWLClass> equivalentConcepts = reasoner.getEquivalentClasses(concept).getEntities();
-        return identifierMapper.mapToIdentifiers(equivalentConcepts, HashSet::new);
+        return identifierMapper.mapToIdentifiers(equivalentConcepts, LinkedHashSet::new);
     }
 
     private Set<Identifier> getDisjointConcepts(OWLClass concept, OWLReasoner reasoner) {

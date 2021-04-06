@@ -16,12 +16,12 @@ import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.gen
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
-import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.collection.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,12 +32,12 @@ public class PDGFFieldService {
     private final FieldTypeProvider fieldTypeProvider;
     private final PDGFGeneratorService generatorService;
 
-    public List<Field> getFields(Concept concept, OntologyContainer<OWLOntology> container) {
+    public List<Field> getFields(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
         //return getTestFileds(concept);
         return CollectionUtils.listOf(
                 getIdentifierField(concept),
                 getDataPropertyFields(concept, container),
-                getObjectPropertyFields(concept, container));
+                getObjectPropertyFields(concept, conceptsToInstatniate, container));
     }
 
     private Field getIdentifierField(Concept concept) {
@@ -127,9 +127,9 @@ public class PDGFFieldService {
                 .withGenerator(new Base64Generator(1, 10, null));
     }
 
-    private List<Field> getObjectPropertyFields(Concept concept, OntologyContainer<OWLOntology> container) {
+    private List<Field> getObjectPropertyFields(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
         return getObjectPropertiesToInstatiate(concept, container).stream()
-                .map(objectProperty -> getField(objectProperty, concept, container))
+                .map(objectProperty -> getField(objectProperty, concept, conceptsToInstatniate, container))
                 .collect(Collectors.toList());
     }
 
@@ -145,10 +145,15 @@ public class PDGFFieldService {
         return true; //TODO: machanism for selective property instatntiation
     }
 
-    private Field getField(ObjectProperty objectProperty, Concept concept, OntologyContainer<OWLOntology> container) {
-        return null;
+    private Field getField(ObjectProperty objectProperty, Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
+        return new Field()
+                .withName(objectProperty.getName())
+                .withType(getFieldType(objectProperty))
+                .withGenerator(generatorService.getGenerator(objectProperty, concept, conceptsToInstatniate, container));
     }
 
-
+    private String getFieldType(ObjectProperty objectProperty) {
+        return fieldTypeProvider.getFieldType(objectProperty).name();
+    }
 
 }

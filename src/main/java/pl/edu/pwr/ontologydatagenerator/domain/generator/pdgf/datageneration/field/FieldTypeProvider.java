@@ -5,6 +5,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.MessageFormat;
@@ -57,6 +58,10 @@ public class FieldTypeProvider implements OWLDataRangeVisitorEx<FieldTypeProvide
 
     public FieldType getFieldType(DataProperty dataProperty) {
         return dataProperty.getRange().getRange().accept(this);
+    }
+
+    public FieldType getFieldType(ObjectProperty objectProperty) {
+        return FieldType.VARCHAR;
     }
 
     @Override

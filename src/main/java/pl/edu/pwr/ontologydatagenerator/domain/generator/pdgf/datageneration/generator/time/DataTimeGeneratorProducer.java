@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.RangeValue;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.ValueRangeConstraints;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
@@ -25,7 +25,7 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 @Service
 @RequiredArgsConstructor
-public class DataTimeGeneratorProducer implements GeneratorProducer  {
+public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer {
 
     private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss[XXX]")
             .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
@@ -41,7 +41,7 @@ public class DataTimeGeneratorProducer implements GeneratorProducer  {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         Temporal min = getMin(generationContext);
         Temporal max = getMax(generationContext);
         TemporalUnit precission = getPrecision(generationContext);
@@ -49,75 +49,75 @@ public class DataTimeGeneratorProducer implements GeneratorProducer  {
         return new DateTimeGenerator(min, max, format);
     }
 
-    private Temporal getMin(GenerationContext context) {
+    private Temporal getMin(DataPropertyGenerationContext context) {
         return getMinFromRestritions(context)
                 .or(() -> getMinBasedOnInferenceRules(context))
                 .or(() -> getMinBasedOnConfiguration(context))
                 .orElse(DEFAULT_MIN);
     }
 
-    private ValueRangeConstraints<Temporal> getRangeConstraints(GenerationContext context) {
+    private ValueRangeConstraints<Temporal> getRangeConstraints(DataPropertyGenerationContext context) {
         return ValueRangeConstraints.of(context.getRestrictions(), PARSER);
     }
 
-    private Optional<Temporal> getMinFromRestritions(GenerationContext context) {
+    private Optional<Temporal> getMinFromRestritions(DataPropertyGenerationContext context) {
         return getRangeConstraints(context).getMin()
                 .map(min -> getIncrementedMinIfNotInclusive(min, context));
     }
 
-    private Temporal getIncrementedMinIfNotInclusive(RangeValue<Temporal> min, GenerationContext context) {
+    private Temporal getIncrementedMinIfNotInclusive(RangeValue<Temporal> min, DataPropertyGenerationContext context) {
         if (min.isInclusive()) {
             return min.getValue();
         }
         return min.getValue().plus(1, getPrecision(context));
     }
 
-    private Optional<Temporal> getMinBasedOnInferenceRules(GenerationContext context) {
+    private Optional<Temporal> getMinBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<Temporal> getMinBasedOnConfiguration(GenerationContext context) {
+    private Optional<Temporal> getMinBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Temporal getMax(GenerationContext context) {
+    private Temporal getMax(DataPropertyGenerationContext context) {
         return getMaxFromRestritions(context)
                 .or(() -> getMaxBasedOnInferenceRules(context))
                 .or(() -> getMaxBasedOnConfiguration(context))
                 .orElse(DEFAULT_MAX);
     }
 
-    private Optional<Temporal> getMaxFromRestritions(GenerationContext context) {
+    private Optional<Temporal> getMaxFromRestritions(DataPropertyGenerationContext context) {
         return getRangeConstraints(context).getMax()
                 .map(max -> getDecrementedMaxIfNotInclusive(max, context));
     }
 
-    private Temporal getDecrementedMaxIfNotInclusive(RangeValue<Temporal> max, GenerationContext context) {
+    private Temporal getDecrementedMaxIfNotInclusive(RangeValue<Temporal> max, DataPropertyGenerationContext context) {
         if (max.isInclusive()) {
             return max.getValue();
         }
         return max.getValue().minus(1, getPrecision(context));
     }
 
-    private Optional<Temporal> getMaxBasedOnInferenceRules(GenerationContext context) {
+    private Optional<Temporal> getMaxBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<Temporal> getMaxBasedOnConfiguration(GenerationContext context) {
+    private Optional<Temporal> getMaxBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private TemporalUnit getPrecision(GenerationContext context) {
+    private TemporalUnit getPrecision(DataPropertyGenerationContext context) {
         return getPrecisionBasedOnInferenceRules(context)
                 .or(() -> getPrecisionBasedOnConfiguration(context))
                 .orElse(DEFAULT_PRECISION);
     }
 
-    private Optional<TemporalUnit> getPrecisionBasedOnInferenceRules(GenerationContext context) {
+    private Optional<TemporalUnit> getPrecisionBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<TemporalUnit> getPrecisionBasedOnConfiguration(GenerationContext context) {
+    private Optional<TemporalUnit> getPrecisionBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.constraints.StringConstraintsProvider;
 
 import java.util.Set;
@@ -17,10 +17,10 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.RDF_PLAIN_LITERAL;
 
 @Service
 @RequiredArgsConstructor
-public class PlainLiteralGeneratorProducer implements GeneratorProducer {
+public class PlainLiteralGeneratorProducer implements DataPropertyGeneratorProducer {
 
     private final StringConstraintsProvider constraintsProvider;
-    private final DistributionProvider<GenerationContext, Distribution> distributionProvider;
+    private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -28,11 +28,11 @@ public class PlainLiteralGeneratorProducer implements GeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         return getGeneratorBasedOnContext(generationContext);
     }
 
-    private Generator getGeneratorBasedOnContext(GenerationContext context) {
+    private Generator getGeneratorBasedOnContext(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         if (min > 25) {
             return getRandomSentenceGenerator(context);
@@ -40,14 +40,14 @@ public class PlainLiteralGeneratorProducer implements GeneratorProducer {
         return getRandomStringGenerator(context);
     }
 
-    private Generator getRandomSentenceGenerator(GenerationContext context) {
+    private Generator getRandomSentenceGenerator(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         long max = constraintsProvider.getMaxLength(context);
         Distribution distribution = distributionProvider.getDistribution(context);
         return new PlainLiteralSentenceGenerator(min, max, "en-US", distribution);
     }
 
-    private Generator getRandomStringGenerator(GenerationContext context) {
+    private Generator getRandomStringGenerator(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         long max = constraintsProvider.getMaxLength(context);
         return new RandomStringGenerator(min, max);

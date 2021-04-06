@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.RangeValue;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.ValueRangeConstraints;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalArgumentAppException;
@@ -19,9 +19,9 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 @Service
 @RequiredArgsConstructor
-public class LongNumberGeneratorProducer implements GeneratorProducer {
+public class LongNumberGeneratorProducer implements DataPropertyGeneratorProducer {
 
-    private final DistributionProvider<GenerationContext, Distribution> distributionProvider;
+    private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -31,25 +31,25 @@ public class LongNumberGeneratorProducer implements GeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         Long min = getMin(generationContext);
         Long max = getMax(generationContext);
         Distribution distribution = distributionProvider.getDistribution(generationContext);
         return new LongNumberGenerator(min, max, distribution);
     }
 
-    private Long getMin(GenerationContext context) {
+    private Long getMin(DataPropertyGenerationContext context) {
         return getMinFromRestritions(context)
                 .or(() -> getMinBasedOnInferenceRules(context))
                 .or(() -> getMinBasedOnConfiguration(context))
                 .orElseGet(() -> getMinForDatatype(context));
     }
 
-    private ValueRangeConstraints<Long> getRangeConstraints(GenerationContext context) {
+    private ValueRangeConstraints<Long> getRangeConstraints(DataPropertyGenerationContext context) {
         return ValueRangeConstraints.of(context.getRestrictions(), Long::parseLong);
     }
 
-    private Optional<Long> getMinFromRestritions(GenerationContext context) {
+    private Optional<Long> getMinFromRestritions(DataPropertyGenerationContext context) {
         return getRangeConstraints(context).getMin()
                 .map(this::getIncrementedMinIfNotInclusive);
     }
@@ -61,15 +61,15 @@ public class LongNumberGeneratorProducer implements GeneratorProducer {
         return min.getValue() + 1L;
     }
 
-    private Optional<Long> getMinBasedOnInferenceRules(GenerationContext context) {
+    private Optional<Long> getMinBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<Long> getMinBasedOnConfiguration(GenerationContext context) {
+    private Optional<Long> getMinBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private long getMinForDatatype(GenerationContext context) {
+    private long getMinForDatatype(DataPropertyGenerationContext context) {
         return switch (context.getDatatype()) {
             case RDFS_LITERAL, XSD_INTEGER, XSD_LONG, XSD_NEGATIVE_INTEGER, XSD_NON_POSITIVE_INTEGER -> Long.MIN_VALUE;
             case XSD_INT -> Integer.MIN_VALUE;
@@ -81,14 +81,14 @@ public class LongNumberGeneratorProducer implements GeneratorProducer {
         };
     }
 
-    private Long getMax(GenerationContext context) {
+    private Long getMax(DataPropertyGenerationContext context) {
         return getMaxFromRestritions(context)
                 .or(() -> getMaxBasedOnInferenceRules(context))
                 .or(() -> getMaxBasedOnConfiguration(context))
                 .orElseGet(() -> getMaxForDatatype(context));
     }
 
-    private Optional<Long> getMaxFromRestritions(GenerationContext context) {
+    private Optional<Long> getMaxFromRestritions(DataPropertyGenerationContext context) {
         return getRangeConstraints(context).getMax()
                 .map(this::getDecrementedMaxIfNotInclusive);
     }
@@ -100,18 +100,18 @@ public class LongNumberGeneratorProducer implements GeneratorProducer {
         return max.getValue() - 1L;
     }
 
-    private Optional<Long> getMaxBasedOnInferenceRules(GenerationContext context) {
+    private Optional<Long> getMaxBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<Long> getMaxBasedOnConfiguration(GenerationContext context) {
+    private Optional<Long> getMaxBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private long getMaxForDatatype(GenerationContext context) {
+    private long getMaxForDatatype(DataPropertyGenerationContext context) {
         return switch (context.getDatatype()) {
-            // PDGF not suport values larger than Long.MAX_VALUE, so max value is limited to Long.MAX_VALUE
-            case RDFS_LITERAL, XSD_INTEGER, XSD_LONG, XSD_NON_NEGATIVE_INTEGER, XSD_POSITIVE_INTEGER, XSD_UNSIGNED_LONG -> Long.MAX_VALUE;
+            // PDGF not suport values larger than Long.MAX_VALUE - 1, so max value is limited to that value
+            case RDFS_LITERAL, XSD_INTEGER, XSD_LONG, XSD_NON_NEGATIVE_INTEGER, XSD_POSITIVE_INTEGER, XSD_UNSIGNED_LONG -> Long.MAX_VALUE - 1;
             case XSD_NEGATIVE_INTEGER -> -1L;
             case XSD_NON_POSITIVE_INTEGER -> 0L;
             case XSD_INT -> Integer.MAX_VALUE;

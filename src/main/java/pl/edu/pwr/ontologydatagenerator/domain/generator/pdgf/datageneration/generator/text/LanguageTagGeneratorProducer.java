@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 @Service
 @RequiredArgsConstructor
-public class LanguageTagGeneratorProducer implements GeneratorProducer {
+public class LanguageTagGeneratorProducer implements DataPropertyGeneratorProducer {
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -21,7 +21,7 @@ public class LanguageTagGeneratorProducer implements GeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         return new LanguageTagGenerator();
     }
 

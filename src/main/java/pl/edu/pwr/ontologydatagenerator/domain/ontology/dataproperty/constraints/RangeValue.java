@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public class RangeValue<T> {
 
-    T value;
-    boolean isInclusive;
+    final T value;
+    final boolean isInclusive;
 
     private RangeValue(T value, boolean isInclusive) {
         this.value = value;

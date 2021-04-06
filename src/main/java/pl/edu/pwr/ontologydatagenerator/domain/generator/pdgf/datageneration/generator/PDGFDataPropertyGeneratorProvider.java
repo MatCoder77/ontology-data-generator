@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PDGFDataPropertyGeneratorProvider implements GeneratorSelector {
 
-    private final GenerationContext generationContext;
-    private final List<GeneratorProducer> generatorProducers;
+    private final DataPropertyGenerationContext generationContext;
+    private final List<DataPropertyGeneratorProducer> dataPropertyGeneratorProducers;
 
     @Override
     public Generator selectGenerator() {
@@ -21,19 +21,19 @@ public class PDGFDataPropertyGeneratorProvider implements GeneratorSelector {
     }
 
     private Generator getGenerator() {
-        List<GeneratorProducer> generatorProducersForDatatype = getGeneratorProducersForDatatype(generationContext.getDatatype());
-        GeneratorProducer bestGeneratorProducer = getBestRatedGeneratorProducer(generatorProducersForDatatype);
-        return bestGeneratorProducer.buildGenerator(generationContext);
+        List<DataPropertyGeneratorProducer> dataPropertyGeneratorProducersForDatatype = getGeneratorProducersForDatatype(generationContext.getDatatype());
+        DataPropertyGeneratorProducer bestDataPropertyGeneratorProducer = getBestRatedGeneratorProducer(dataPropertyGeneratorProducersForDatatype);
+        return bestDataPropertyGeneratorProducer.buildGenerator(generationContext);
     }
 
-    private List<GeneratorProducer> getGeneratorProducersForDatatype(OWL2Datatype datatype) {
-        return generatorProducers.stream()
+    private List<DataPropertyGeneratorProducer> getGeneratorProducersForDatatype(OWL2Datatype datatype) {
+        return dataPropertyGeneratorProducers.stream()
                 .filter(producer -> producer.isDataTypeSupported(datatype))
                 .collect(Collectors.toList());
     }
 
-    private GeneratorProducer getBestRatedGeneratorProducer(Collection<GeneratorProducer> generatorProducers) {
-        return generatorProducers.stream()
+    private DataPropertyGeneratorProducer getBestRatedGeneratorProducer(Collection<DataPropertyGeneratorProducer> dataPropertyGeneratorProducers) {
+        return dataPropertyGeneratorProducers.stream()
                 .findAny().get();
     }
 

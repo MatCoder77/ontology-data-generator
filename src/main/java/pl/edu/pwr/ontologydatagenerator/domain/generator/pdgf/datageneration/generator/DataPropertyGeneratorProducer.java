@@ -6,7 +6,7 @@ import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface GeneratorProducer {
+public interface DataPropertyGeneratorProducer {
 
     default Set<OWL2Datatype.Category> getSupportedCategories() {
         return getSupportedDataTypes().stream()
@@ -24,6 +24,6 @@ public interface GeneratorProducer {
         return getSupportedDataTypes().contains(datatype);
     }
 
-    Generator buildGenerator(GenerationContext generationContext);
+    Generator buildGenerator(DataPropertyGenerationContext generationContext);
 
 }

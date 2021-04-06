@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.constraints.StringConstraintsProvider;
 
 import java.util.Set;
@@ -17,9 +17,9 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.XSD_HEX_BINARY;
 
 @Service
 @RequiredArgsConstructor
-public class HexadecimalGeneratorProducer implements GeneratorProducer {
+public class HexadecimalGeneratorProducer implements DataPropertyGeneratorProducer {
 
-    private final DistributionProvider<GenerationContext, Distribution> distributionProvider;
+    private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
     private final StringConstraintsProvider constraintsProvider;
 
     @Override
@@ -28,7 +28,7 @@ public class HexadecimalGeneratorProducer implements GeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(GenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
         long minLength = constraintsProvider.getMinLength(generationContext);
         long maxLength = constraintsProvider.getMaxLength(generationContext);
         Distribution distribution = distributionProvider.getDistribution(generationContext);

@@ -8,13 +8,12 @@ import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +22,8 @@ public class PDGFGeneratorService {
 
     private static final String NOT_SUPPORTED_RANGE_TYPE_MSG ="{0} ranges are currently not supported!";
 
-    private final List<GeneratorProducer> generatorProducers;
+    private final List<DataPropertyGeneratorProducer> dataPropertyGeneratorProducers;
+    private final ObjectPropertyGeneratorProducer objectPropertyGeneratorProducer;
 
     public Generator getGenerator(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
         DataRangeType rangeType = getRangeType(dataProperty);
@@ -40,8 +40,8 @@ public class PDGFGeneratorService {
 
     private Generator getGeneratorForDatatypeRange(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
         OWL2Datatype datatype = getRangeAsOWLDatatype(dataProperty).getBuiltInDatatype();
-        GenerationContext generationContext = new GenerationContext(datatype, Collections.emptyList(), dataProperty, concept, container);
-        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, generatorProducers);
+        DataPropertyGenerationContext generationContext = new DataPropertyGenerationContext(datatype, Collections.emptyList(), dataProperty, concept, container);
+        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
         return generatorProvider.selectGenerator();
     }
 
@@ -53,8 +53,8 @@ public class PDGFGeneratorService {
         OWLDatatypeRestriction range = getRangeAsOWLDatatypeRestriction(dataProperty);
         OWL2Datatype datatype = getBuildInDatatype(range);
         Set<OWLFacetRestriction> restrictions = range.getFacetRestrictions();
-        GenerationContext generationContext = new GenerationContext(datatype, restrictions, dataProperty, concept, container);
-        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, generatorProducers);
+        DataPropertyGenerationContext generationContext = new DataPropertyGenerationContext(datatype, restrictions, dataProperty, concept, container);
+        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
         return generatorProvider.selectGenerator();
     }
 
@@ -71,6 +71,11 @@ public class PDGFGeneratorService {
 
     private UnsupportedOperationException getUnsupportedException(DataRangeType rangeType) {
         return new UnsupportedOperationException(MessageFormat.format(NOT_SUPPORTED_RANGE_TYPE_MSG, rangeType.getName()));
+    }
+
+    public Generator getGenerator(ObjectProperty objectProperty, Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
+        ObjectPropertyGenerationContext context = new ObjectPropertyGenerationContext(objectProperty, concept, new HashSet<>(conceptsToInstatniate), container);
+        return objectPropertyGeneratorProducer.buildGenerator(context);
     }
 
 }

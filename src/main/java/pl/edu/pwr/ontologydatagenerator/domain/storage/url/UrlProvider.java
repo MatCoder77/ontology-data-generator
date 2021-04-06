@@ -4,6 +4,6 @@ import java.net.URI;
 
 public interface UrlProvider {
 
-    URI getUrlForResource(String relativePath);
+    URI getUrlForResource(String... pathSegments);
 
 }

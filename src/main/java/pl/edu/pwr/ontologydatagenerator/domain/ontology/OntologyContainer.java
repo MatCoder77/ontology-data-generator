@@ -1,5 +1,6 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
+import com.google.common.io.Files;
 import lombok.Builder;
 import lombok.Getter;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
@@ -15,12 +16,18 @@ import java.util.Optional;
 public class OntologyContainer<T> {
 
     private final T ontology;
+    private final Identifier ontologyIdentifier;
     private final Map<Identifier, Concept> concepts;
     private final Map<Identifier, DataProperty> dataProperties;
     private final Map<Identifier, ObjectProperty> objectProperties;
 
     public Optional<Concept> getConcept(Identifier identifier) {
         return Optional.ofNullable(concepts.get(identifier));
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public String getOntologyName() {
+        return Files.getNameWithoutExtension(ontologyIdentifier.getIri().getShortForm());
     }
 
 }

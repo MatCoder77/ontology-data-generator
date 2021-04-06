@@ -36,6 +36,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 class OWLOntologyService implements OntologyService<OWLOntology>  {
 
+    private static final Identifier DEFAULT_ONTOLOGY_IDENTFIER = Identifier.of(IRI.create("http://anonymous-ontology.owl"));
+
     private final StorageService storageService;
     private final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
     private final OWLOntologyValidator ontologyValidator;
@@ -77,11 +79,13 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
     @Override
     public OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
         OWLReasoner reasoner = getResasoner(ontology);
+        Identifier ontologyIdentifier = getOntologyIdentifier(ontology);
         List<DataProperty> dataProperties = dataPropertyService.getDataProperties(reasoner);
         List<ObjectProperty> objectProperties = objectPropertyService.getObjectProperties(reasoner);
         List<Concept> concepts = conceptService.parseConcepts(dataProperties, objectProperties, reasoner);
         return OntologyContainer.<OWLOntology>builder()
                 .withOntology(ontology)
+                .withOntologyIdentifier(ontologyIdentifier)
                 .withConcepts(getConceptsByIdentifier(concepts))
                 .withDataProperties(getDataPropertiesByIdentifiers(dataProperties))
                 .withObjectProperties(getObjectPropertiesByIdnetifiers(objectProperties))
@@ -90,6 +94,12 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
 
     private OWLReasoner getResasoner(OWLOntology ontology) {
         return new ReasonerFactory().createReasoner(ontology);
+    }
+
+    private Identifier getOntologyIdentifier(OWLOntology ontology) {
+        return ontology.getOntologyID().getOntologyIRI()
+                .map(Identifier::of)
+                .orElse(DEFAULT_ONTOLOGY_IDENTFIER);
     }
 
     private Map<Identifier, Concept> getConceptsByIdentifier(Collection<Concept> concepts) {

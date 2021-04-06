@@ -1,26 +1,24 @@
 package pl.edu.pwr.ontologydatagenerator.domain.storage.url;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
 @Slf4j
-@Component
+@Service
+@RequiredArgsConstructor
 class LocalUrlProvider implements UrlProvider {
 
-    private final String baseUrl;
-
-    public LocalUrlProvider(@Value("${app.datastore}") String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+    @Value("${app.datastore}") private final String baseUrl;
 
     @Override
-    public URI getUrlForResource(String relativePath) {
+    public URI getUrlForResource(String... pathSegments) {
         return UriComponentsBuilder.fromUriString(baseUrl)
-                .pathSegment(relativePath)
+                .pathSegment(pathSegments)
                 .build()
                 .toUri();
     }

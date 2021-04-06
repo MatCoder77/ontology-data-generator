@@ -32,7 +32,7 @@ public class PDGFTableService {
     private List<Concept> getConceptsToInstantiate(OntologyContainer<OWLOntology> ontologyContainer) {
         return ontologyContainer.getConcepts().values().stream()
                 .filter(CollectionUtils.distinctBy(Concept::getEquivalentConcepts))
-                .filter(concept -> shouldConnceptBeInstantiated(concept))
+                .filter(this::shouldConnceptBeInstantiated)
                 .collect(Collectors.toList());
     }
 

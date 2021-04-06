@@ -1,14 +1,11 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.customized;
 
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.*;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 
 import java.net.URI;
 import java.util.*;
-
-import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 public class EmailAddressGenerator extends GenSequential implements Generator {
 
@@ -70,11 +67,6 @@ public class EmailAddressGenerator extends GenSequential implements Generator {
     private GenDictList getDictListGenerator(URI dictionaryUrl) {
         return new GenDictList()
                 .withFile(dictionaryUrl.getPath());
-    }
-
-    @Override
-    public Set<OWL2Datatype> getSupportedDataTypes() {
-        return Set.of(XSD_STRING);
     }
 
 }

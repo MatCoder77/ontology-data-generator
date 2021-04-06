@@ -20,7 +20,7 @@ import pl.edu.pwr.ontologydatagenerator.domain.storage.url.UrlProvider;
 @EnableConfigurationProperties
 public class OntologyDataGeneratorApplication implements CommandLineRunner {
 
-	private static final String UNIV_BENCH_EXTEDED_QL = "input/univ-bench_v2.owl";
+	private static final String UNIV_BENCH_EXTEDED_QL = "input/univ-bench_v3.owl";
 	private static final String UNIV_BENCH = "input/univ-bench.owl";
 
 	private final UrlProvider localUrlProvider;

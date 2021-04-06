@@ -1,18 +1,14 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.uri;
 
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.*;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.text.RandomStringGenerator;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-
-import static org.semanticweb.owlapi.vocab.OWL2Datatype.RDFS_LITERAL;
-import static org.semanticweb.owlapi.vocab.OWL2Datatype.XSD_ANY_URI;
 
 public class UriGenerator extends GenSequential implements Generator {
 
@@ -40,6 +36,15 @@ public class UriGenerator extends GenSequential implements Generator {
         this.generators = generators;
     }
 
+    public UriGenerator(String scheme, long min, long max) {
+        this.concatenateResults = true;
+        List<Object> generators = new ArrayList<>();
+        generators.add(getStaticValueGenerator(scheme + "://"));
+        generators.add(new RandomStringGenerator(min, max));
+        generators.add(getStaticValueGenerator(".com"));
+        this.generators = generators;
+    }
+
     private GenOtherFieldValue getGenOtherFieldValue(HasIdentifier fragment) {
         return new GenOtherFieldValue()
                 .withReference(getReference(fragment));
@@ -58,11 +63,6 @@ public class UriGenerator extends GenSequential implements Generator {
     private GenDictList getDictListGenerator(URI dictionaryUrl) {
         return new GenDictList()
                 .withFile(dictionaryUrl.getPath());
-    }
-
-    @Override
-    public Set<OWL2Datatype> getSupportedDataTypes() {
-        return Set.of(RDFS_LITERAL, XSD_ANY_URI);
     }
 
 }

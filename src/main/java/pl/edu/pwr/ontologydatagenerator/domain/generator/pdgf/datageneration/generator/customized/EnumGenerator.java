@@ -1,6 +1,5 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.customized;
 
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.*;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 
@@ -78,11 +77,6 @@ public class EnumGenerator extends GenSwitch implements Generator {
         return enumConstants.stream()
                 .map(Enum::toString)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Set<OWL2Datatype> getSupportedDataTypes() {
-        return Collections.emptySet();
     }
 
 }

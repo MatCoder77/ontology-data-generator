@@ -1,0 +1,127 @@
+package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.numeric;
+
+import lombok.RequiredArgsConstructor;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.stereotype.Service;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GeneratorProducer;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.RangeValue;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.ValueRangeConstraints;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalArgumentAppException;
+
+import java.util.Optional;
+import java.util.Set;
+
+import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
+
+@Service
+@RequiredArgsConstructor
+public class LongNumberGeneratorProducer implements GeneratorProducer {
+
+    private final DistributionProvider<GenerationContext, Distribution> distributionProvider;
+
+    @Override
+    public Set<OWL2Datatype> getSupportedDataTypes() {
+        return Set.of(RDFS_LITERAL, XSD_INTEGER, XSD_NON_NEGATIVE_INTEGER, XSD_NON_POSITIVE_INTEGER, XSD_POSITIVE_INTEGER,
+                XSD_NEGATIVE_INTEGER, XSD_LONG, XSD_INT, XSD_SHORT, XSD_BYTE, XSD_UNSIGNED_LONG, XSD_UNSIGNED_INT,
+                XSD_UNSIGNED_SHORT, XSD_UNSIGNED_BYTE);
+    }
+
+    @Override
+    public Generator buildGenerator(GenerationContext generationContext) {
+        Long min = getMin(generationContext);
+        Long max = getMax(generationContext);
+        Distribution distribution = distributionProvider.getDistribution(generationContext);
+        return new LongNumberGenerator(min, max, distribution);
+    }
+
+    private Long getMin(GenerationContext context) {
+        return getMinFromRestritions(context)
+                .or(() -> getMinBasedOnInferenceRules(context))
+                .or(() -> getMinBasedOnConfiguration(context))
+                .orElseGet(() -> getMinForDatatype(context));
+    }
+
+    private ValueRangeConstraints<Long> getRangeConstraints(GenerationContext context) {
+        return ValueRangeConstraints.of(context.getRestrictions(), Long::parseLong);
+    }
+
+    private Optional<Long> getMinFromRestritions(GenerationContext context) {
+        return getRangeConstraints(context).getMin()
+                .map(this::getIncrementedMinIfNotInclusive);
+    }
+
+    private Long getIncrementedMinIfNotInclusive(RangeValue<Long> min) {
+        if (min.isInclusive()) {
+            return min.getValue();
+        }
+        return min.getValue() + 1L;
+    }
+
+    private Optional<Long> getMinBasedOnInferenceRules(GenerationContext context) {
+        return Optional.empty();
+    }
+
+    private Optional<Long> getMinBasedOnConfiguration(GenerationContext context) {
+        return Optional.empty();
+    }
+
+    private long getMinForDatatype(GenerationContext context) {
+        return switch (context.getDatatype()) {
+            case RDFS_LITERAL, XSD_INTEGER, XSD_LONG, XSD_NEGATIVE_INTEGER, XSD_NON_POSITIVE_INTEGER -> Long.MIN_VALUE;
+            case XSD_INT -> Integer.MIN_VALUE;
+            case XSD_SHORT -> Short.MIN_VALUE;
+            case XSD_BYTE -> Byte.MIN_VALUE;
+            case XSD_NON_NEGATIVE_INTEGER, XSD_UNSIGNED_BYTE, XSD_UNSIGNED_SHORT, XSD_UNSIGNED_INT, XSD_UNSIGNED_LONG -> 0L;
+            case XSD_POSITIVE_INTEGER -> 1L;
+            default -> throw new IllegalArgumentAppException("Called procuder for not supported datatype");
+        };
+    }
+
+    private Long getMax(GenerationContext context) {
+        return getMaxFromRestritions(context)
+                .or(() -> getMaxBasedOnInferenceRules(context))
+                .or(() -> getMaxBasedOnConfiguration(context))
+                .orElseGet(() -> getMaxForDatatype(context));
+    }
+
+    private Optional<Long> getMaxFromRestritions(GenerationContext context) {
+        return getRangeConstraints(context).getMax()
+                .map(this::getDecrementedMaxIfNotInclusive);
+    }
+
+    private Long getDecrementedMaxIfNotInclusive(RangeValue<Long> max) {
+        if (max.isInclusive()) {
+            return max.getValue();
+        }
+        return max.getValue() - 1L;
+    }
+
+    private Optional<Long> getMaxBasedOnInferenceRules(GenerationContext context) {
+        return Optional.empty();
+    }
+
+    private Optional<Long> getMaxBasedOnConfiguration(GenerationContext context) {
+        return Optional.empty();
+    }
+
+    private long getMaxForDatatype(GenerationContext context) {
+        return switch (context.getDatatype()) {
+            // PDGF not suport values larger than Long.MAX_VALUE, so max value is limited to Long.MAX_VALUE
+            case RDFS_LITERAL, XSD_INTEGER, XSD_LONG, XSD_NON_NEGATIVE_INTEGER, XSD_POSITIVE_INTEGER, XSD_UNSIGNED_LONG -> Long.MAX_VALUE;
+            case XSD_NEGATIVE_INTEGER -> -1L;
+            case XSD_NON_POSITIVE_INTEGER -> 0L;
+            case XSD_INT -> Integer.MAX_VALUE;
+            case XSD_SHORT -> Short.MAX_VALUE;
+            case XSD_BYTE -> Byte.MAX_VALUE;
+            case XSD_UNSIGNED_BYTE -> 255L;
+            case XSD_UNSIGNED_SHORT -> 65535L;
+            case XSD_UNSIGNED_INT -> 4294967295L;
+            default -> throw new IllegalArgumentAppException("Called procuder for not supported datatype");
+        };
+    }
+
+}

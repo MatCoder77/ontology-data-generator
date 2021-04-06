@@ -100,13 +100,10 @@ public class PDGFFieldService {
     }
 
     private Field getLongField() {
-        DataProperty data = DataProperty.builder()
-                .withIdentifier(Identifier.of(IRI.create("http://benchmark/OWL2Bench#__long__test__")))
-                .build();
         return new Field()
                 .withName("__long__test__")
                 .withType(FieldTypeProvider.FieldType.NUMERIC.name())
-                .withGenerator(new LongNumberGenerator(-100L, 100L, null/*distributionProvider.getDistribution(Identifier.of(IRI.create("http://benchmark/OWL2Bench#__TEST__")), data)*/));
+                .withGenerator(new LongNumberGenerator(-100L, 100L, null));
     }
 
     private Field getDoubleField() {

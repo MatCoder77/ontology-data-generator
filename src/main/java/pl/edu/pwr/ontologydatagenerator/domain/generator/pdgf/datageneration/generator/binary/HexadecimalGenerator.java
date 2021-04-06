@@ -1,15 +1,11 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary;
 
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenRandomString;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.GenTemplate;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 
 import java.util.List;
-import java.util.Set;
-
-import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 /**
  * Generates randeom sequences of binary data encoded as hexadecimal touples representing octets.
@@ -38,11 +34,6 @@ public class HexadecimalGenerator extends GenTemplate implements Generator {
                 .withMin(min)
                 .withMax(max)
                 .withCharacters("0123456789abcdef");
-    }
-
-    @Override
-    public Set<OWL2Datatype> getSupportedDataTypes() {
-        return Set.of(RDFS_LITERAL, XSD_HEX_BINARY);
     }
 
 }

@@ -5,10 +5,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
-import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.GenerationContext;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.HasIdentifier;
-import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
-import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 
 import java.text.MessageFormat;
@@ -16,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PDGFDistributionProvider implements DistributionProvider<Distribution> {
+public class PDGFDistributionProvider implements DistributionProvider<GenerationContext, Distribution> {
 
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_TYPE = "app.generator.pdgf.datageneration.properties.{0}.distribution.type";
     private static final String PROPERTY_TEMPLATE_DISTRIBUTION_BETA = "app.generator.pdgf.datageneration.properties.{0}.distribution.beta";
@@ -32,8 +30,8 @@ public class PDGFDistributionProvider implements DistributionProvider<Distributi
     private final Environment environment;
 
     @Override
-    public Distribution getDistribution(Identifier concept, DataProperty dataProperty) {
-        return getDistributionBasedOnConfigurationOrDefault(dataProperty);
+    public Distribution getDistribution(GenerationContext context) {
+        return getDistributionBasedOnConfigurationOrDefault(context.getDataProperty());
     }
 
     private Distribution getDistributionBasedOnConfigurationOrDefault(HasIdentifier property) {
@@ -49,11 +47,6 @@ public class PDGFDistributionProvider implements DistributionProvider<Distributi
 
     private static <T> Optional<T> getPropertyValue(HasIdentifier property, String propertyTemplate, Class<T> targetClass, Environment environment) {
         return Optional.ofNullable(environment.getProperty(MessageFormat.format(propertyTemplate, property.getName()), targetClass));
-    }
-
-    @Override
-    public Distribution getDistribution(Identifier concept, ObjectProperty dataProperty) {
-        return getUniformDistribution();
     }
 
     @SuppressWarnings("SameReturnValue")

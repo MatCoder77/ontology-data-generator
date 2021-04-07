@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngineConfigurationService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.Schema;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.SchemaDefinitonService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.*;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.configuration.PDGFConfiguration;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFSchemaDefinition;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
@@ -23,19 +20,20 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class PDGFGenerationEngine implements GenerationEngine<OntologyContainer<OWLOntology>, PDGFDataGenerationResult> {
 
-    private final GenerationEngineConfigurationService<PDGFConfiguration> configurationService;
+    private final GenerationEngineConfigurationService<PDGFConfiguration, PDGFSchemaDefinition> configurationService;
     private final SchemaDefinitonService<PDGFSchemaDefinition, OWLOntology> schemaDefinitonService;
     @Value("${app.generator.pdgf.home.url}") URI pdgfHomeDirecoryUrl;
 
     @Override
     public PDGFDataGenerationResult generateData(OntologyContainer<OWLOntology> ontologyContainer) {
-        URI defaultConfigurationUrl = configurationService.getDefaultConfiguration();
         Schema<PDGFSchemaDefinition> schemaDefinition = schemaDefinitonService.createSchemaDefinition(ontologyContainer);
-        int exitCode = executeGenerationProcess(defaultConfigurationUrl, schemaDefinition.getUrl());
+        GenerationEngineConfiguraiton<PDGFConfiguration> defaultConfigurationUrl = configurationService.createGenerationEngineConfiguration(schemaDefinition.getDefiniton());
+        int exitCode = executeGenerationProcess(schemaDefinition.getUrl(), defaultConfigurationUrl.getUrl());
+        validateProcessExitCode(exitCode);
         return null;
     }
 
-    private int executeGenerationProcess(URI defaultConfigurationUrl, URI schemaDefinitionUrl) {
+    private int executeGenerationProcess(URI schemaDefinitionUrl, URI defaultConfigurationUrl) {
         try {
             Process process = runGenerationProcess(defaultConfigurationUrl, schemaDefinitionUrl);
             return process.waitFor();
@@ -51,6 +49,12 @@ public class PDGFGenerationEngine implements GenerationEngine<OntologyContainer<
                 .command("java", "-jar", "pdgf.jar", "-l", schemaDefinitionUrl.getPath(), "-l", defaultConfigurationUrl.getPath(), "-c", "-ns", "-s")
                 .inheritIO()
                 .start();
+    }
+
+    private void validateProcessExitCode(int exitCode) {
+        if (exitCode != 0) {
+            throw new IllegalStateAppException("Generation process ended with error. Exit code: " + exitCode);
+        }
     }
 
 }

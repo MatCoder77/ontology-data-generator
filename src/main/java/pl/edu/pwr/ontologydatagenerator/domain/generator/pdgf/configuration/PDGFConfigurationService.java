@@ -3,9 +3,11 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.configuration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngineConfiguraiton;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngineConfigurationService;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFSchemaDefinition;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFSchemaDefinitionService;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.StorageService;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.url.UrlProvider;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.ThrowingConsumer;
@@ -14,43 +16,38 @@ import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Service
 @RequiredArgsConstructor
-public class PDGFConfigurationService implements GenerationEngineConfigurationService<PDGFConfiguration> {
+public class PDGFConfigurationService implements GenerationEngineConfigurationService<PDGFConfiguration, PDGFSchemaDefinition> {
 
     public static final String DEFAULT_SCHEDULER = "DefaultScheduler";
     public static final String CSV_ROW_OUTPUT = "CSVRowOutput";
+    private static final String CONFIGURATION_NAME_SUFFIX = "-configuration";
 
     private final StorageService storageService;
     private final UrlProvider urlProvider;
     @Qualifier("PDGFConfiguration") private final Marshaller xmlMarshaller;
     @Value("${app.datastore.configuration}") private final String configurationDirectory;
     @Value("${app.datastore.output}") private final String outputDirectory;
-    @Value("${app.generator.pdgf.configuration.default.name}") private final String defaultConfigurationName;
 
     @Override
-    public URI getDefaultConfiguration() {
-        URI configurationUrl = getConfigurationUrl(defaultConfigurationName);
-        Resource configurationResource = storageService.getResource(configurationUrl);
-        if (!configurationResource.exists()) {
-            PDGFConfiguration defaultConfiguration = buildDefaultConfiguration();
-            saveConfiguration(defaultConfiguration, configurationUrl);
-        }
-        return configurationUrl;
+    public GenerationEngineConfiguraiton<PDGFConfiguration> createGenerationEngineConfiguration(PDGFSchemaDefinition schemaDefinition) {
+        PDGFConfiguration configuration = buildConfiguration(schemaDefinition);
+        URI url = saveConfiguration(configuration);
+        return new GenerationEngineConfiguraiton<>(url, configuration);
     }
 
-    private URI getConfigurationUrl(String configurationName) {
-        return urlProvider.getUrlForResource(configurationDirectory, configurationName);
-    }
-
-    @Override
-    public PDGFConfiguration buildDefaultConfiguration() {
+    public PDGFConfiguration buildConfiguration(PDGFSchemaDefinition schemaDefinition) {
         return new PDGFConfiguration()
                 .withScheduler(getDefaultScheduler())
-                .withOutput(getDefaultOutput())
-                .withSchema(getDefaultSchema());
+                .withOutput(getDefaultOutput(getNameWithoutSchemaSuffix(schemaDefinition)))
+                .withSchema(getDefaultSchema(schemaDefinition));
     }
 
     private Scheduler getDefaultScheduler() {
@@ -58,11 +55,15 @@ public class PDGFConfigurationService implements GenerationEngineConfigurationSe
                 .withName(DEFAULT_SCHEDULER);
     }
 
-    private Output getDefaultOutput() {
+    private String getNameWithoutSchemaSuffix(PDGFSchemaDefinition schemaDefinition) {
+        return StringUtils.removeEnd(schemaDefinition.getName(), PDGFSchemaDefinitionService.SCHEMA_NAME_SUFFIX);
+    }
+
+    private Output getDefaultOutput(String ontologyName) {
         return new Output()
                 .withName(CSV_ROW_OUTPUT)
                 .withFileTemplate("outputDir + table.getName() + fileEnding")
-                .withOutputDir(getOutputDirectoryUrl().getPath())
+                .withOutputDir(getOutputDirectoryUrl(ontologyName).getPath())
                 .withFileEnding(".csv")
                 .withDelimiter(",")
                 .withQuoteStrings(false)
@@ -71,24 +72,49 @@ public class PDGFConfigurationService implements GenerationEngineConfigurationSe
                 .withSortByRowID(true);
     }
 
-    private URI getOutputDirectoryUrl() {
-        return urlProvider.getUrlForResource(outputDirectory + "/");
+    private URI getOutputDirectoryUrl(String ontologyName) {
+        return urlProvider.getUrlForResource(outputDirectory, ontologyName + "/");
     }
 
-    private Schema getDefaultSchema() {
+    private Schema getDefaultSchema(PDGFSchemaDefinition schemaDefinition) {
         return new Schema()
-                .withName("default")
-                .withTables(getEmptyTables());
+                .withName(schemaDefinition.getName())
+                .withTables(getTables(schemaDefinition));
     }
 
-    private Tables getEmptyTables() {
+    private Tables getTables(PDGFSchemaDefinition schemaDefinition) {
         return new Tables()
-                .withTable(new Table().withName("__placeholder__"));
+                .withTable(getTablesList(schemaDefinition));
     }
 
-    @Override
-    public void saveConfiguration(PDGFConfiguration configuration, URI url) {
-        storageService.saveResource(getConfigurationSaver(configuration), url);
+    private List<Table> getTablesList(PDGFSchemaDefinition schemaDefinition) {
+        return schemaDefinition.getTable().stream()
+                .map(pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Table::getName)
+                .map(this::getTable)
+                .collect(Collectors.toList());
+    }
+
+    private Table getTable(String name) {
+        return new Table()
+                .withName(name);
+    }
+
+    public URI saveConfiguration(PDGFConfiguration configuration) {
+        URI configurationUrl = getConfigurationUrl(getConfigurationName(configuration.getSchema()));
+        storageService.saveResource(getConfigurationSaver(configuration), configurationUrl);
+        return configurationUrl;
+    }
+
+    private String getConfigurationName(Schema schema) {
+        return getNameWithoutSchemaSuffix(schema) + CONFIGURATION_NAME_SUFFIX;
+    }
+
+    private String getNameWithoutSchemaSuffix(Schema schema) {
+        return StringUtils.removeEnd(schema.getName(), PDGFSchemaDefinitionService.SCHEMA_NAME_SUFFIX);
+    }
+
+    private URI getConfigurationUrl(String configurationName) {
+        return urlProvider.getUrlForResource(configurationDirectory, configurationName + ".xml");
     }
 
     private Consumer<OutputStream> getConfigurationSaver(PDGFConfiguration configuration) {

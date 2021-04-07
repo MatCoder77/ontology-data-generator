@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class PDGFSchemaDefinitionService implements SchemaDefinitonService<PDGFSchemaDefinition, OWLOntology> {
 
+    public static final String SCHEMA_NAME_SUFFIX = "-schema";
+
     private final StorageService storageService;
     private final UrlProvider urlProvider;
     @Qualifier("PDGFDatageneration") private final Marshaller xmlMarshaller;
@@ -48,7 +50,7 @@ public class PDGFSchemaDefinitionService implements SchemaDefinitonService<PDGFS
     }
 
     private String getSchemaName(OntologyContainer<OWLOntology> ontologyContainer) {
-        return ontologyContainer.getOntologyName() + "-schema";
+        return ontologyContainer.getOntologyName() + SCHEMA_NAME_SUFFIX;
     }
 
     private Property getScaleFactorProperty() {

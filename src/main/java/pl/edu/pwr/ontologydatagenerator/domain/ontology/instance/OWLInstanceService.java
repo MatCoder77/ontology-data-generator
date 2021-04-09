@@ -66,7 +66,7 @@ public class OWLInstanceService {
 
     private OWLLiteral getOWLLiteral(DataPropertyInstance dataPropertyInstance) {
         DataPropertyValue dataPropertyValue = dataPropertyValueProvider.getDataPropertyValue(dataPropertyInstance);
-        return dataFactory.getOWLLiteral(dataPropertyValue.getLexicalValue(), dataPropertyInstance.getValue());
+        return dataFactory.getOWLLiteral(dataPropertyValue.getLexicalValue(), dataPropertyValue.getDatatype());
     }
 
     private List<OWLAxiom> getObjectPropertyAssertions(Instance instance) {

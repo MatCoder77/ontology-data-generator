@@ -35,22 +35,22 @@ public class PlainLiteralGeneratorProducer implements DataPropertyGeneratorProdu
     private Generator getGeneratorBasedOnContext(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         if (min > 25) {
-            return getRandomSentenceGenerator(context);
+            return getPlainLiteralSentenceGenerator(context);
         }
-        return getRandomStringGenerator(context);
+        return getPlainLiteralStringGenerator(context);
     }
 
-    private Generator getRandomSentenceGenerator(DataPropertyGenerationContext context) {
+    private Generator getPlainLiteralSentenceGenerator(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         long max = constraintsProvider.getMaxLength(context);
         Distribution distribution = distributionProvider.getDistribution(context);
         return new PlainLiteralSentenceGenerator(min, max, "en-US", distribution);
     }
 
-    private Generator getRandomStringGenerator(DataPropertyGenerationContext context) {
+    private Generator getPlainLiteralStringGenerator(DataPropertyGenerationContext context) {
         long min = constraintsProvider.getMinLength(context);
         long max = constraintsProvider.getMaxLength(context);
-        return new RandomStringGenerator(min, max);
+        return new PlainLiteralStringGenerator(min, max, "en-US");
     }
 
 }

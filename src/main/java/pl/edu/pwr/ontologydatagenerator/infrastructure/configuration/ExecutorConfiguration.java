@@ -20,6 +20,7 @@ public class ExecutorConfiguration {
         executor.setCorePoolSize(CORE_POOL_SIZE);
         executor.setMaxPoolSize(MAX_POOL_SIZE);
         executor.setQueueCapacity(QUEUE_CAPACITY);
+        executor.setDaemon(true);
         executor.initialize();
         return executor;
     }

@@ -36,6 +36,7 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 		ontologyService.validateOntology(ontology);
 		ontologyService.generateInstances(ontology, generationEngine);
 		ontologyService.saveOntology(ontology, localUrlProvider.getUrlForResource("output/univ-bench2.owl"));
+		ontologyService.validateOntology(ontology);
 		log.info("Application finished successfully!");
 	}
 

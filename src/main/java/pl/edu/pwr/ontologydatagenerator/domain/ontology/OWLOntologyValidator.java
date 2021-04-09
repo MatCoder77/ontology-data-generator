@@ -1,6 +1,8 @@
 package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
+import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class OWLOntologyValidator {
     void validate(OWLOntology owlOntology) {
         validateOntologyProfile(owlOntology);
         validateIfOntologyContainsOnlyBuildInDatatypes(owlOntology);
+        validateIfOntologyIsConsistent(owlOntology);
     }
 
     private void validateOntologyProfile(OWLOntology ontology) {
@@ -88,6 +91,21 @@ public class OWLOntologyValidator {
         if (!datatype.isBuiltIn()) {
             throw new IllegalStateAppException(MessageFormat.format("Ontology contains custom data type {0}. Generation of values is supported only for build in data types!", datatype));
         }
+    }
+
+    private void validateIfOntologyIsConsistent(OWLOntology ontology) {
+        if (!isOntologyConsistent(ontology)) {
+            throw new IllegalStateAppException("Ontology is inconsistent");
+        }
+    }
+
+    public boolean isOntologyConsistent(OWLOntology ontology) {
+        OWLReasoner resasoner = getResasoner(ontology);
+        return resasoner.isConsistent();
+    }
+
+    private OWLReasoner getResasoner(OWLOntology ontology) {
+        return new ReasonerFactory().createReasoner(ontology);
     }
 
 }

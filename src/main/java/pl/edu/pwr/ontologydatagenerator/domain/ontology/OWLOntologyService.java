@@ -2,11 +2,14 @@ package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.HermiT.ReasonerFactory;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.OWLConceptService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.OWLDataPropertyService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.Instance;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.OWLInstanceService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.OWLObjectPropertyService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.StorageService;
@@ -29,14 +32,15 @@ import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
 @Qualifier("OWL")
 @RequiredArgsConstructor
-class OWLOntologyService implements OntologyService<OWLOntology>  {
+class OWLOntologyService implements OntologyService<OWLOntology, Instance>  {
 
-    private static final Identifier DEFAULT_ONTOLOGY_IDENTFIER = Identifier.of(IRI.create("http://anonymous-ontology.owl"));
+    private static final Identifier DEFAULT_ONTOLOGY_IDENTFIER = Identifier.of(IRI.create("https://anonymous-ontology.owl"));
 
     private final StorageService storageService;
     private final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
@@ -44,6 +48,7 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
     private final OWLDataPropertyService dataPropertyService;
     private final OWLObjectPropertyService objectPropertyService;
     private final OWLConceptService conceptService;
+    private final OWLInstanceService instanceService;
 
     @Override
     public OWLOntology loadOntology(URI url) {
@@ -76,8 +81,7 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
         ontologyValidator.validate(ontology);
     }
 
-    @Override
-    public OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
+    private OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
         OWLReasoner reasoner = getResasoner(ontology);
         Identifier ontologyIdentifier = getOntologyIdentifier(ontology);
         List<DataProperty> dataProperties = dataPropertyService.getDataProperties(reasoner);
@@ -112,6 +116,13 @@ class OWLOntologyService implements OntologyService<OWLOntology>  {
 
     private Map<Identifier, ObjectProperty> getObjectPropertiesByIdnetifiers(Collection<ObjectProperty> objectProperties) {
         return TransformUtils.transformToMap(objectProperties, ObjectProperty::getIdentifier, Function.identity());
+    }
+
+    @Override
+    public void generateInstances(OWLOntology ontology, GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine) {
+        OntologyContainer<OWLOntology> container = parseOntology(ontology);
+        Stream<Instance> instanceStream = generationEngine.generateData(container);
+        instanceStream.forEach(instance -> instanceService.instantiate(instance, container));
     }
 
 }

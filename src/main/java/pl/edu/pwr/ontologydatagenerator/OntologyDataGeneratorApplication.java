@@ -8,12 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.Schema;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.SchemaDefinitonService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.PDGFDataGenerationResult;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.PDGFSchemaDefinition;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyService;
+import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.Instance;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.url.UrlProvider;
 
 @Slf4j
@@ -25,9 +22,8 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 	private static final String UNIV_BENCH_EXTEDED_QL = "input/univ-bench_v3.owl";
 
 	private final UrlProvider localUrlProvider;
-	private final OntologyService<OWLOntology> ontologyService;
-	private final SchemaDefinitonService<PDGFSchemaDefinition, OWLOntology> schemaDefinitonService;
-	private final GenerationEngine<OntologyContainer<OWLOntology>, PDGFDataGenerationResult> generationEngine;
+	private final OntologyService<OWLOntology, Instance> ontologyService;
+	private final GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine;
 
 	public static void main(String[] args) {
 		SpringApplication.run(OntologyDataGeneratorApplication.class, args);
@@ -38,10 +34,8 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 		log.info("Application started!");
 		OWLOntology ontology = ontologyService.loadOntology(localUrlProvider.getUrlForResource(UNIV_BENCH_EXTEDED_QL));
 		ontologyService.validateOntology(ontology);
+		ontologyService.generateInstances(ontology, generationEngine);
 		ontologyService.saveOntology(ontology, localUrlProvider.getUrlForResource("output/univ-bench2.owl"));
-		OntologyContainer<OWLOntology> owlOntologyOntologyContainer = ontologyService.parseOntology(ontology);
-		Schema<PDGFSchemaDefinition> schemaDefinition = schemaDefinitonService.createSchemaDefinition(owlOntologyOntologyContainer);
-		PDGFDataGenerationResult pdgfDataGenerationResult = generationEngine.generateData(owlOntologyOntologyContainer);
 		log.info("Application finished successfully!");
 	}
 

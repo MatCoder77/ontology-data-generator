@@ -3,9 +3,7 @@ package pl.edu.pwr.ontologydatagenerator.infrastructure.transform;
 import lombok.experimental.UtilityClass;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
@@ -114,6 +112,26 @@ public class TransformUtils {
                 .collect(Collectors.toMap(
                         entry -> keyTransformer.apply(entry.getKey()),
                         entry -> TransformUtils.transform(entry.getValue(), elementTransformer, collectionFactory)));
+    }
+
+    public static <K, E, K2, E2> Map<K2, E2> transformMap(Map<K, E> fromMap,
+                                                          Function<K, K2> keyTransformer,
+                                                          Function<E, E2> elementTransformer) {
+        return fromMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> keyTransformer.apply(entry.getKey()),
+                        entry -> elementTransformer.apply(entry.getValue())));
+    }
+
+    public static <K, E, K2, E2> Map<K2, E2> transformMap(Map<K, E> fromMap,
+                                                          BiPredicate<? super K, ? super E> beforeTransformPredicate,
+                                                          Function<K, K2> keyTransformer,
+                                                          Function<E, E2> elementTransformer) {
+        return fromMap.entrySet().stream()
+                .filter(entry -> beforeTransformPredicate.test(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toMap(
+                        entry -> keyTransformer.apply(entry.getKey()),
+                        entry -> elementTransformer.apply(entry.getValue())));
     }
 
 }

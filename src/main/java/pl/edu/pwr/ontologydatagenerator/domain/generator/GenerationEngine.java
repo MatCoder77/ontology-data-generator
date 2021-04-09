@@ -1,7 +1,9 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator;
 
+import java.util.stream.Stream;
+
 public interface GenerationEngine<T, R> {
 
-    R generateData(T ontologyContainer);
+    Stream<R> generateData(T ontologyContainer);
 
 }

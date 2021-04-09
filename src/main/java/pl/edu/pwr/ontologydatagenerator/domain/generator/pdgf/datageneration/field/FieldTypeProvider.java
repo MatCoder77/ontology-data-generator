@@ -19,7 +19,7 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 public class FieldTypeProvider implements OWLDataRangeVisitorEx<FieldTypeProvider.FieldType> {
 
     private static final String DATA_RANGE_NOT_SUPPORTED_MSG = "Cannot provide type for field. Data range {0} is not supported.";
-    private static final Map<OWL2Datatype, FieldType> fieldTypeByDatatype = Map.ofEntries(
+    private static final Map<OWL2Datatype, FieldType> FIELD_TYPE_BY_DATATYPE = Map.ofEntries(
             Map.entry(RDF_XML_LITERAL, FieldType.VARCHAR),
             Map.entry(RDFS_LITERAL, FieldType.VARCHAR), 
             Map.entry(RDF_PLAIN_LITERAL, FieldType.VARCHAR),
@@ -60,13 +60,14 @@ public class FieldTypeProvider implements OWLDataRangeVisitorEx<FieldTypeProvide
         return dataProperty.getRange().getRange().accept(this);
     }
 
+    @SuppressWarnings({"SameReturnValue", "unused"})
     public FieldType getFieldType(ObjectProperty objectProperty) {
         return FieldType.VARCHAR;
     }
 
     @Override
     public FieldType visit(OWLDatatype range) {
-        return fieldTypeByDatatype.get(range.getBuiltInDatatype());
+        return FIELD_TYPE_BY_DATATYPE.get(range.getBuiltInDatatype());
     }
 
     @Override
@@ -91,13 +92,14 @@ public class FieldTypeProvider implements OWLDataRangeVisitorEx<FieldTypeProvide
 
     @Override
     public FieldType visit(OWLDatatypeRestriction range) {
-        return fieldTypeByDatatype.get(range.getDatatype().getBuiltInDatatype());
+        return FIELD_TYPE_BY_DATATYPE.get(range.getDatatype().getBuiltInDatatype());
     }
 
     private UnsupportedOperationException getUnsupportedOperationException(OWLDataRange dataRange) {
         return new UnsupportedOperationException(MessageFormat.format(DATA_RANGE_NOT_SUPPORTED_MSG, dataRange.getDataRangeType()));
     }
 
+    @SuppressWarnings("unused")
     public enum FieldType {
 
         VARCHAR,

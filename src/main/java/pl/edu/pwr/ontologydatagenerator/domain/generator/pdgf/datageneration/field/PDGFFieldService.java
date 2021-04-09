@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.fi
 
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.model.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Field;
@@ -31,6 +32,7 @@ public class PDGFFieldService {
 
     private final FieldTypeProvider fieldTypeProvider;
     private final PDGFGeneratorService generatorService;
+    @Value("${app.generator.pdgf.datageneration.identifier-field-name}") private final String identifierFieldName;
 
     public List<Field> getFields(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
         //return getTestFileds(concept);
@@ -42,7 +44,7 @@ public class PDGFFieldService {
 
     private Field getIdentifierField(Concept concept) {
         return new Field()
-                .withName("__identifier__")
+                .withName(identifierFieldName)
                 .withType(FieldTypeProvider.FieldType.VARCHAR.name())
                 .withGenerator(new IdentifierGenerator(concept));
     }

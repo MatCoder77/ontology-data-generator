@@ -18,6 +18,10 @@ public class Identifier {
         return new Identifier(iri);
     }
 
+    public String getName() {
+        return iri.getShortForm();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

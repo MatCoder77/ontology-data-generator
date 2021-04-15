@@ -20,6 +20,8 @@ public class Concept implements HasIdentifier {
     private final Map<Identifier, ObjectProperty> objectProperties;
     private final Set<Identifier> disjointConcepts;
     private final Set<Identifier> equivalentConcepts;
+    private final Set<Identifier> superConcepts;
+    private final Set<Identifier> subConcepts;
     private final Set<Identifier> instances;
 
     @Override

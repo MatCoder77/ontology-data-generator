@@ -104,6 +104,12 @@ public class TransformUtils {
                 .collect(Collectors.toCollection(collectionFactory));
     }
 
+    public static <E, C extends Collection<E>> C flattenValues(Collection<? extends Collection<E>> collection, Supplier<C> collectionFactory) {
+        return collection.stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(collectionFactory));
+    }
+
     public static <K, E, K2, E2, C extends Collection<E2>> Map<K2, C> transformMap(Map<K, ? extends Collection<E>> fromMap,
                                                                                    Function<K, K2> keyTransformer,
                                                                                    Function<E, E2> elementTransformer,

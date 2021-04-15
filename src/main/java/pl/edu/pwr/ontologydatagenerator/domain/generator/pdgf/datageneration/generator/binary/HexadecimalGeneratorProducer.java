@@ -28,10 +28,10 @@ public class HexadecimalGeneratorProducer implements DataPropertyGeneratorProduc
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        long minLength = constraintsProvider.getMinLength(generationContext);
-        long maxLength = constraintsProvider.getMaxLength(generationContext);
-        Distribution distribution = distributionProvider.getDistribution(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        long minLength = constraintsProvider.getMinLength(context);
+        long maxLength = constraintsProvider.getMaxLength(context);
+        Distribution distribution = distributionProvider.getDistribution(context);
         return new HexadecimalGenerator(minLength, maxLength, distribution);
     }
 

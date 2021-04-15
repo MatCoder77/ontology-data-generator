@@ -11,12 +11,40 @@ app:
               beta: 2.0
               alpha: 1.9977
         dictionaries:
-          -
-            url: /home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/xsd_language_dict.txt
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/xsd_language_dict.txt
             supportedDatatypes:
               - RDFS_LITERAL
               - XSD_LANGUAGE
               - RDF_LANG_STRING
             keywords:
-              - language tag
-              - keyword2
+              conceptKeywords:
+                - language tag
+                - lang
+              propertyKeywords:
+                - prop1
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names_female.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - person
+                - female
+              propertyKeywords:
+                - first name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names_male.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - person
+                - female
+              propertyKeywords:
+                - first name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/gender.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - person
+              propertyKeywords:
+                - gender

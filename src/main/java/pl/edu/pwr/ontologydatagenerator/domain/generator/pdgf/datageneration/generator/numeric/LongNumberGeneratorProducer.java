@@ -31,10 +31,10 @@ public class LongNumberGeneratorProducer implements DataPropertyGeneratorProduce
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        Long min = getMin(generationContext);
-        Long max = getMax(generationContext);
-        Distribution distribution = distributionProvider.getDistribution(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        Long min = getMin(context);
+        Long max = getMax(context);
+        Distribution distribution = distributionProvider.getDistribution(context);
         return new LongNumberGenerator(min, max, distribution);
     }
 

@@ -24,6 +24,14 @@ public interface DataPropertyGeneratorProducer {
         return getSupportedDataTypes().contains(datatype);
     }
 
-    Generator buildGenerator(DataPropertyGenerationContext generationContext);
+    default boolean isApplicable(DataPropertyGenerationContext context) {
+        return isDataTypeSupported(context.getDatatype());
+    }
+
+    default double getScore(DataPropertyGenerationContext context) {
+        return 0;
+    }
+
+    Generator buildGenerator(DataPropertyGenerationContext context);
 
 }

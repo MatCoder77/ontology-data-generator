@@ -32,11 +32,11 @@ public class DoubleGeneratorProducer implements DataPropertyGeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        double min = getMin(generationContext);
-        double max = getMax(generationContext);
-        int precision = getPrecision(generationContext);
-        Distribution distribution = distributionProvider.getDistribution(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        double min = getMin(context);
+        double max = getMax(context);
+        int precision = getPrecision(context);
+        Distribution distribution = distributionProvider.getDistribution(context);
         return new DoubleNumberGenerator(min, max, precision, distribution);
     }
 

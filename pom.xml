@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -16,6 +16,12 @@
 	<properties>
 		<java.version>15</java.version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<!--===================================== Spring dependencies =====================================-->
 		<dependency>
@@ -58,6 +64,18 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
 			<version>1.8</version>
+		</dependency>
+		<!--==================================  Semantic similarity   =====================================-->
+		<dependency>
+			<groupId>de.sciss</groupId>
+			<artifactId>ws4j</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<!--=================================    Lexical similarity   =====================================-->
+		<dependency>
+			<groupId>info.debatty</groupId>
+			<artifactId>java-string-similarity</artifactId>
+			<version>2.0.0</version>
 		</dependency>
 		<!--===================================== Other dependencies =====================================-->
 		<dependency>

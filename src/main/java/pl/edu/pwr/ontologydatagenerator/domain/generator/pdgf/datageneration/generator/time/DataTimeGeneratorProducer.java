@@ -41,10 +41,10 @@ public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer 
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        Temporal min = getMin(generationContext);
-        Temporal max = getMax(generationContext);
-        TemporalUnit precission = getPrecision(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        Temporal min = getMin(context);
+        Temporal max = getMax(context);
+        TemporalUnit precission = getPrecision(context);
         String format = getFormatBasedOnPrecission((ChronoUnit) precission);
         return new DateTimeGenerator(min, max, format);
     }

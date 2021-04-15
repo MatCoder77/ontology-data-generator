@@ -33,6 +33,8 @@ public class OWLConceptService {
         Map<Identifier, ObjectProperty> objectProperties = getObjectProperties(identifier, allObjectProperties);
         Set<Identifier> equivalentConcepts = getEquivalentConcepts(concept, reasoner);
         Set<Identifier> disjointConcepts = getDisjointConcepts(concept, reasoner);
+        Set<Identifier> superConcepts = getSuperConcepts(concept, reasoner);
+        Set<Identifier> subConcepts = getSubConcepts(concept, reasoner);
         Set<Identifier> instances = getInstances(concept, reasoner);
         return Concept.builder()
                 .withIdentifier(identifier)
@@ -40,6 +42,8 @@ public class OWLConceptService {
                 .withObjectProperties(objectProperties)
                 .withEquivalentConcepts(equivalentConcepts)
                 .withDisjointConcepts(disjointConcepts)
+                .withSuperConcepts(superConcepts)
+                .withSubConcepts(subConcepts)
                 .withInstances(instances)
                 .build();
     }
@@ -72,6 +76,18 @@ public class OWLConceptService {
     private Set<Identifier> getDisjointConcepts(OWLClass concept, OWLReasoner reasoner) {
         Set<OWLClass> disjointConcepts = reasoner.getDisjointClasses(concept).getFlattened();
         return identifierMapper.mapToIdentifiers(disjointConcepts, HashSet::new);
+    }
+
+    private Set<Identifier> getSuperConcepts(OWLClass concept, OWLReasoner reasoner) {
+        return reasoner.getSuperClasses(concept).getFlattened().stream()
+                .map(identifierMapper::mapToIdentifier)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Identifier> getSubConcepts(OWLClass concept, OWLReasoner reasoner) {
+        return reasoner.getSubClasses(concept).getFlattened().stream()
+                .map(identifierMapper::mapToIdentifier)
+                .collect(Collectors.toSet());
     }
 
     private Set<Identifier> getInstances(OWLClass concept, OWLReasoner reasoner) {

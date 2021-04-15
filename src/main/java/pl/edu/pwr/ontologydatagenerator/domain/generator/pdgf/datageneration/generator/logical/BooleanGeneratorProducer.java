@@ -25,8 +25,8 @@ public class BooleanGeneratorProducer implements DataPropertyGeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        return new BooleanGenerator(distributionProvider.getDistribution(generationContext));
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        return new BooleanGenerator(distributionProvider.getDistribution(context));
     }
     
 }

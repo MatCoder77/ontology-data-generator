@@ -21,7 +21,7 @@ public class LanguageTagGeneratorProducer implements DataPropertyGeneratorProduc
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
         return new LanguageTagGenerator();
     }
 

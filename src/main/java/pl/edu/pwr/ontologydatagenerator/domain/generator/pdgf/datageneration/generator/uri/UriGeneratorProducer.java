@@ -28,9 +28,9 @@ public class UriGeneratorProducer implements DataPropertyGeneratorProducer {
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        long min = constraintsProvider.getMinLength(generationContext);
-        long max = constraintsProvider.getMaxLength(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        long min = constraintsProvider.getMinLength(context);
+        long max = constraintsProvider.getMaxLength(context);
         return new UriGenerator("http", min, max);
     }
 

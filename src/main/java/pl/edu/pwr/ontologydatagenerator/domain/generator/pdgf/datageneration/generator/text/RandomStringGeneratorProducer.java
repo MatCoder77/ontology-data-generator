@@ -27,8 +27,8 @@ public class RandomStringGeneratorProducer implements DataPropertyGeneratorProdu
     }
 
     @Override
-    public Generator buildGenerator(DataPropertyGenerationContext generationContext) {
-        return getGeneratorBasedOnContext(generationContext);
+    public Generator buildGenerator(DataPropertyGenerationContext context) {
+        return getGeneratorBasedOnContext(context);
     }
 
     private Generator getGeneratorBasedOnContext(DataPropertyGenerationContext context) {

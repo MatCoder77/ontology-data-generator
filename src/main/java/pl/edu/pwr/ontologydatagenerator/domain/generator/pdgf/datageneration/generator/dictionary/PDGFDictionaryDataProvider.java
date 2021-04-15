@@ -7,8 +7,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DictionaryDataProvider;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.Keywords;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -23,6 +26,26 @@ public class PDGFDictionaryDataProvider implements DictionaryDataProvider {
         return dictionaries.stream()
                 .filter(dictionary -> dictionary.isDatatypeSupported(datatype))
                 .collect(Collectors.toList());
+    }
+
+    public Set<OWL2Datatype> getAllSupportedDatatypes() {
+        return dictionaries.stream()
+                .map(Dictionary::getSupportedDatatypes)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    public List<Keywords> getAllSupportedKeywords() {
+        return dictionaries.stream()
+                .map(Dictionary::getKeywords)
+                .collect(Collectors.toList());
+    }
+
+    public Set<Dictionary> getDictionariesForDataTypes(Set<OWL2Datatype> datatypes) {
+        return datatypes.stream()
+                .map(this::getDictionariesForDatatype)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
 }

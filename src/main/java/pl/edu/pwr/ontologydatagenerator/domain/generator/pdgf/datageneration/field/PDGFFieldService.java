@@ -7,21 +7,13 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Field;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.PDGFGeneratorService;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.Base64Generator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.binary.HexadecimalGenerator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.id.IdentifierGenerator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.logical.BooleanGenerator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.numeric.DoubleNumberGenerator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.numeric.LongNumberGenerator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.time.DateTimeGenerator;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.collection.CollectionUtils;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,53 +72,6 @@ public class PDGFFieldService {
 
     private Generator getGenerator(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
         return generatorService.getGenerator(dataProperty, concept, container);
-    }
-
-    private List<Field> getTestFileds(Concept concept) {
-        return List.of(getIdentifierField(concept), getBooleanField(), getDataField(),
-                getLongField(), getDoubleField(), getHexaDecField(), getBase64DecField());
-    }
-
-    private Field getBooleanField() {
-        return new Field()
-                .withName("__boolean_test___")
-                .withType(FieldTypeProvider.FieldType.VARCHAR.name())
-                .withGenerator(new BooleanGenerator());
-    }
-
-    private Field getDataField() {
-        return new Field()
-                .withName("__data_test___")
-                .withType(FieldTypeProvider.FieldType.DATE.name())
-                .withGenerator(new DateTimeGenerator(LocalDateTime.now().minus(10, ChronoUnit.YEARS), LocalDateTime.now(), "yyyy-MM-dd"));
-    }
-
-    private Field getLongField() {
-        return new Field()
-                .withName("__long__test__")
-                .withType(FieldTypeProvider.FieldType.NUMERIC.name())
-                .withGenerator(new LongNumberGenerator(-100L, 100L, null));
-    }
-
-    private Field getDoubleField() {
-        return new Field()
-                .withName("__double__test___")
-                .withType(FieldTypeProvider.FieldType.DOUBLE.name())
-                .withGenerator(new DoubleNumberGenerator(-10, 10, 3, null));
-    }
-
-    private Field getHexaDecField() {
-        return new Field()
-                .withName("__test-hexadec__")
-                .withType(FieldTypeProvider.FieldType.VARCHAR.name())
-                .withGenerator(new HexadecimalGenerator(1, 10, null));
-    }
-
-    private Field getBase64DecField() {
-        return new Field()
-                .withName("__test-base64__")
-                .withType(FieldTypeProvider.FieldType.VARCHAR.name())
-                .withGenerator(new Base64Generator(1, 10, null));
     }
 
     private List<Field> getObjectPropertyFields(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {

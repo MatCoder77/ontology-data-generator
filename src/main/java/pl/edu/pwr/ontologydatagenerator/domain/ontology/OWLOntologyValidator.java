@@ -66,7 +66,7 @@ public class OWLOntologyValidator {
             log.info("Ontology is in profile {}", profileReport.getProfile().getName());
         } else {
             log.info("Ontology is not in profile {}", profileReport.getProfile().getName());
-            log.info("Violations: {}", System.lineSeparator() + buildViolationsMessage(profileReport.getViolations()));
+            log.debug("Violations: {}", System.lineSeparator() + buildViolationsMessage(profileReport.getViolations()));
         }
     }
 

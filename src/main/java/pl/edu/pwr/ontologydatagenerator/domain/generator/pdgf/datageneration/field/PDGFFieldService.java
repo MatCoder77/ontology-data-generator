@@ -27,7 +27,6 @@ public class PDGFFieldService {
     @Value("${app.generator.pdgf.datageneration.identifier-field-name}") private final String identifierFieldName;
 
     public List<Field> getFields(Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
-        //return getTestFileds(concept);
         return CollectionUtils.listOf(
                 getIdentifierField(concept),
                 getDataPropertyFields(concept, container),

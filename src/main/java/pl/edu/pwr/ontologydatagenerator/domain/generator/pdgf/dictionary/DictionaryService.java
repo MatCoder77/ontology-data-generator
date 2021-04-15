@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.dictionary;
+package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.dictionary;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,9 @@ import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +28,24 @@ public class DictionaryService {
     }
 
     public Optional<Map.Entry<Dictionary, Double>> findBestDictionary(DataProperty dataProperty, Concept concept, Set<OWL2Datatype> supportedDataTypes) {
-        return findBestDictionary(dataProperty, concept, dictionaryDataProvider.getDictionariesForDataTypes(supportedDataTypes));
+        return getDictionariesSortedDescendingByScore(dataProperty, concept, dictionaryDataProvider.getDictionariesForDataTypes(supportedDataTypes))
+                .entrySet().stream()
+                .findFirst();
     }
 
-    private Optional<Map.Entry<Dictionary, Double>> findBestDictionary(DataProperty dataProperty, Concept concept, Collection<Dictionary> dictionaries) {
+    @SafeVarargs
+    public final Optional<Map.Entry<Dictionary, Double>> findBestDictionary(DataProperty dataProperty, Concept concept, Set<OWL2Datatype> supportedDataTypes, Predicate<Dictionary>... predicates) {
+        return getDictionariesSortedDescendingByScore(dataProperty, concept, dictionaryDataProvider.getDictionariesForDataTypes(supportedDataTypes))
+                .entrySet().stream()
+                .filter(scoreByDictionary -> combineFilters(predicates).test(scoreByDictionary.getKey()))
+                .findFirst();
+    }
+
+    private Map<Dictionary, Double> getDictionariesSortedDescendingByScore(DataProperty dataProperty, Concept concept, Collection<Dictionary> dictionaries) {
         List<Dictionary> dictionariesForConcept = getDictionariesForConcept(concept, dictionaries);
         return caclulatePropertyScoreForDictionaries(dataProperty, dictionariesForConcept).entrySet().stream()
-                .max(Comparator.comparingDouble(Map.Entry::getValue));
+                .sorted(Collections.reverseOrder(Comparator.comparingDouble(Map.Entry::getValue)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     private List<Dictionary> getDictionariesForConcept(Concept concept, Collection<Dictionary> dictionaries) {
@@ -88,6 +101,11 @@ public class DictionaryService {
         return dataProperty.getSuperProperties().stream()
                 .map(Identifier::getName)
                 .collect(Collectors.toSet());
+    }
+
+    @SafeVarargs
+    private static <T> Predicate<T> combineFilters(Predicate<T>... predicates) {
+        return Stream.of(predicates).reduce(x -> true, Predicate::and);
     }
 
 }

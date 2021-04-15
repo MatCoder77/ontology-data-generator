@@ -20,28 +20,39 @@ public class StringConstraints implements DataPropertyRangeConstraints {
 
     public static StringConstraints of(Collection<OWLFacetRestriction> restrictions) {
         Map<OWLFacet, OWLLiteral> valuesByRestrictions = DataPropertyRangeConstraints.getValuesByRestrictions(restrictions);
-        Long min = getMinLength(valuesByRestrictions).orElse(null);
-        Long max = getMaxLength(valuesByRestrictions).orElse(null);
-        String pattern = getPattern(valuesByRestrictions).orElse(null);
+        Long min = getMinLength(valuesByRestrictions, StringConstraints::mapLiteralToLong).orElse(null);
+        Long max = getMaxLength(valuesByRestrictions, StringConstraints::mapLiteralToLong).orElse(null);
+        String pattern = getPattern(valuesByRestrictions, OWLLiteral::getLiteral).orElse(null);
         return new StringConstraints(min, max, pattern);
     }
 
-    private static Optional<Long> getMinLength(Map<OWLFacet, OWLLiteral> restrictions) {
-        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.MIN_LENGTH, Long::parseLong)
-                .or(() -> getExactLength(restrictions));
+    private static <E> Optional<Long> getMinLength(Map<OWLFacet, E> restrictions, Function<E, Long> parser) {
+        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.MIN_LENGTH, parser)
+                .or(() -> getExactLength(restrictions, parser));
     }
 
-    private static Optional<Long> getExactLength(Map<OWLFacet, OWLLiteral> restrictions) {
-        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.LENGTH, Long::parseLong);
+    private static Long mapLiteralToLong(OWLLiteral literal) {
+        return Long.parseLong(literal.getLiteral());
     }
 
-    private static Optional<Long> getMaxLength(Map<OWLFacet, OWLLiteral> restrictions) {
-        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.MAX_LENGTH, Long::parseLong)
-                .or(() -> getExactLength(restrictions));
+    private static <E> Optional<Long> getExactLength(Map<OWLFacet, E> restrictions, Function<E, Long> parser) {
+        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.LENGTH, parser);
     }
 
-    private static Optional<String> getPattern(Map<OWLFacet, OWLLiteral> restrictions) {
-        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.PATTERN, Function.identity());
+    private static <E> Optional<Long> getMaxLength(Map<OWLFacet, E> restrictions, Function<E, Long> parser) {
+        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.MAX_LENGTH, parser)
+                .or(() -> getExactLength(restrictions, parser));
+    }
+
+    private static <E> Optional<String> getPattern(Map<OWLFacet, E> restrictions, Function<E, String> parser) {
+        return DataPropertyRangeConstraints.getFacetValue(restrictions, OWLFacet.PATTERN, parser);
+    }
+
+    public static StringConstraints of(Map<OWLFacet, String> valuesByRestrictions) {
+        Long min = getMinLength(valuesByRestrictions, Long::parseLong).orElse(null);
+        Long max = getMaxLength(valuesByRestrictions, Long::parseLong).orElse(null);
+        String pattern = getPattern(valuesByRestrictions, Function.identity()).orElse(null);
+        return new StringConstraints(min, max, pattern);
     }
 
     public Optional<Long> getMinLength() {

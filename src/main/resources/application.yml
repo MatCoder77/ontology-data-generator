@@ -48,3 +48,6 @@ app:
                 - person
               propertyKeywords:
                 - gender
+            constraints:
+              MAX_LENGTH: 6
+              MIN_LENGTH: 4

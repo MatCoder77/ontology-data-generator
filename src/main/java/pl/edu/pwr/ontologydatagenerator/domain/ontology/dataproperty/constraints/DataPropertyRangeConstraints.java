@@ -12,9 +12,8 @@ import java.util.stream.Collectors;
 
 public interface DataPropertyRangeConstraints {
 
-    static <T> Optional<T> getFacetValue(Map<OWLFacet, OWLLiteral> restrictions, OWLFacet facet, Function<String, T> parser) {
+    static <R, E> Optional<R> getFacetValue(Map<OWLFacet, E> restrictions, OWLFacet facet, Function<E, R> parser) {
         return Optional.ofNullable(restrictions.get(facet))
-                .map(OWLLiteral::getLiteral)
                 .map(parser);
     }
 

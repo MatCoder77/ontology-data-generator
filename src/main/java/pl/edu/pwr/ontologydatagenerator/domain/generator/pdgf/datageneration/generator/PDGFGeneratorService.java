@@ -5,6 +5,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.GeneratorSelector;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
@@ -41,7 +42,7 @@ public class PDGFGeneratorService {
     private Generator getGeneratorForDatatypeRange(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
         OWL2Datatype datatype = getRangeAsOWLDatatype(dataProperty).getBuiltInDatatype();
         DataPropertyGenerationContext generationContext = new DataPropertyGenerationContext(datatype, Collections.emptyList(), dataProperty, concept, container);
-        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
+        GeneratorSelector generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
         return generatorProvider.selectGenerator();
     }
 

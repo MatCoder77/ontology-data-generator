@@ -8,15 +8,12 @@ import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.gen
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.RangeValue;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.ValueRangeConstraints;
-import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -25,15 +22,15 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 
 @Service
 @RequiredArgsConstructor
-public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer {
+public class DateTimeGeneratorProducer implements DataPropertyGeneratorProducer {
 
-    private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss[XXX]")
+    public static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss[XXX]")
             .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
             .toFormatter();
-    private static final Function<String, Temporal> PARSER = string -> formatter.parse(string, OffsetDateTime::from);
-    private static final TemporalUnit DEFAULT_PRECISION = ChronoUnit.DAYS;
+    private static final Function<String, Temporal> PARSER = string -> TIME_FORMATTER.parse(string, OffsetDateTime::from);
+    private static final DateTimePrecisson DEFAULT_PRECISION = DateTimePrecisson.DAYS;
     private static final Temporal DEFAULT_MIN = PARSER.apply("1990-01-01T00:00:00Z");
-    private static final Temporal DEFAULT_MAX = PARSER.apply("2020-03-01T00:00:00Z");
+    private static final Temporal DEFAULT_MAX = PARSER.apply("2020-05-01T00:00:00Z");
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -44,9 +41,8 @@ public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer 
     public Generator buildGenerator(DataPropertyGenerationContext context) {
         Temporal min = getMin(context);
         Temporal max = getMax(context);
-        TemporalUnit precission = getPrecision(context);
-        String format = getFormatBasedOnPrecission((ChronoUnit) precission);
-        return new DateTimeGenerator(min, max, format);
+        DateTimePrecisson precission = getPrecision(context);
+        return new DateTimeGenerator(min, max, precission);
     }
 
     private Temporal getMin(DataPropertyGenerationContext context) {
@@ -69,7 +65,7 @@ public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer 
         if (min.isInclusive()) {
             return min.getValue();
         }
-        return min.getValue().plus(1, getPrecision(context));
+        return min.getValue().plus(1, getPrecision(context).getUnit());
     }
 
     private Optional<Temporal> getMinBasedOnInferenceRules(DataPropertyGenerationContext context) {
@@ -96,7 +92,7 @@ public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer 
         if (max.isInclusive()) {
             return max.getValue();
         }
-        return max.getValue().minus(1, getPrecision(context));
+        return max.getValue().minus(1, getPrecision(context).getUnit());
     }
 
     private Optional<Temporal> getMaxBasedOnInferenceRules(DataPropertyGenerationContext context) {
@@ -107,30 +103,18 @@ public class DataTimeGeneratorProducer implements DataPropertyGeneratorProducer 
         return Optional.empty();
     }
 
-    private TemporalUnit getPrecision(DataPropertyGenerationContext context) {
+    private DateTimePrecisson getPrecision(DataPropertyGenerationContext context) {
         return getPrecisionBasedOnInferenceRules(context)
                 .or(() -> getPrecisionBasedOnConfiguration(context))
                 .orElse(DEFAULT_PRECISION);
     }
 
-    private Optional<TemporalUnit> getPrecisionBasedOnInferenceRules(DataPropertyGenerationContext context) {
+    private Optional<DateTimePrecisson> getPrecisionBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
-    private Optional<TemporalUnit> getPrecisionBasedOnConfiguration(DataPropertyGenerationContext context) {
+    private Optional<DateTimePrecisson> getPrecisionBasedOnConfiguration(DataPropertyGenerationContext context) {
         return Optional.empty();
-    }
-
-    private String getFormatBasedOnPrecission(ChronoUnit precission) {
-        return switch (precission) {
-            case YEARS -> "yyyy";
-            case MONTHS -> "yyyy-MM";
-            case DAYS -> "yyyy-MM-dd";
-            case HOURS -> "yyyy-MM-dd'T'HH";
-            case MINUTES -> "yyyy-MM-dd'T'HH:mm";
-            case SECONDS -> "yyyy-MM-dd'T'HH:mm:ss";
-            default -> throw new IllegalStateAppException("Unsupported time prescission");
-        };
     }
 
 }

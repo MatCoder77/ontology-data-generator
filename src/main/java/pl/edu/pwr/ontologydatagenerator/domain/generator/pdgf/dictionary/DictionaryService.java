@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.DictionaryDataProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.similarity.SemanticSimilarityService;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class DictionaryService {
 
-    private final PDGFDictionaryDataProvider dictionaryDataProvider;
+    private final DictionaryDataProvider dictionaryDataProvider;
     private final SemanticSimilarityService semanticSimilarityService;
 
     public Set<OWL2Datatype> getAllSupportedDatatypes() {

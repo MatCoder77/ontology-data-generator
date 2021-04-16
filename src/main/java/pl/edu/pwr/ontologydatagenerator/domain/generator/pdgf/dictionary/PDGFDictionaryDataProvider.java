@@ -22,12 +22,6 @@ public class PDGFDictionaryDataProvider implements DictionaryDataProvider {
 
     private List<Dictionary> dictionaries;
 
-    public List<Dictionary> getDictionariesForDatatype(OWL2Datatype datatype) {
-        return dictionaries.stream()
-                .filter(dictionary -> dictionary.isDatatypeSupported(datatype))
-                .collect(Collectors.toList());
-    }
-
     public Set<OWL2Datatype> getAllSupportedDatatypes() {
         return dictionaries.stream()
                 .map(Dictionary::getSupportedDatatypes)
@@ -46,6 +40,12 @@ public class PDGFDictionaryDataProvider implements DictionaryDataProvider {
                 .map(this::getDictionariesForDatatype)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
+    }
+
+    private List<Dictionary> getDictionariesForDatatype(OWL2Datatype datatype) {
+        return dictionaries.stream()
+                .filter(dictionary -> dictionary.isDatatypeSupported(datatype))
+                .collect(Collectors.toList());
     }
 
 }

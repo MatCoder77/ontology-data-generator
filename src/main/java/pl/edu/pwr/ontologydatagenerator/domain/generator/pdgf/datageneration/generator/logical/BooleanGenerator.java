@@ -11,8 +11,4 @@ public class BooleanGenerator extends GenLongNumber implements Generator {
         this.distribution = distribution;
     }
 
-    public BooleanGenerator() {
-        this(null);
-    }
-
 }

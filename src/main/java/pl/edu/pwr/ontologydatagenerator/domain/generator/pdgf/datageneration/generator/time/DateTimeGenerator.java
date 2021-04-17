@@ -11,12 +11,12 @@ import java.util.List;
 
 public class DateTimeGenerator extends GenSequential implements Generator {
 
-    public DateTimeGenerator(Temporal startDate, Temporal endDate, DateTimePrecisson precisson) {
+    public DateTimeGenerator(Temporal startDate, Temporal endDate, DateTimePrecission precisson) {
         this.concatenateResults = true;
         this.generators = List.of(getDataTimeGenerator(startDate, endDate, precisson), getStaticValueGenerator(precisson.getReminder()));
     }
 
-    private GenDateTime getDataTimeGenerator(Temporal startDate, Temporal endDate, DateTimePrecisson precisson) {
+    private GenDateTime getDataTimeGenerator(Temporal startDate, Temporal endDate, DateTimePrecission precisson) {
         String format = precisson.getFormat();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return new GenDateTime()

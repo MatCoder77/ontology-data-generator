@@ -1,7 +1,14 @@
 app:
   generator:
     pdgf:
+      home:
+        url: file:/home/mateusz/Documents/Praca Magisterska/PDGF/PDGFEnvironment
       datageneration:
+        seed: 87467532L
+        rng: PdgfDefaultRandom
+        scalefactor: 10
+        size: 10
+        identifier-field-name: __identifier__
         tables:
           baseSize: 10
         properties:
@@ -10,6 +17,11 @@ app:
               type: Beta
               beta: 2.0
               alpha: 1.9977
+          birthDate:
+            constraints:
+              maxLength: 1940-01-01T00:00:00Z
+              minLength: 1942-01-01T00:00:00Z
+            precision: YEARS
         dictionaries:
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/xsd_language_dict.txt
             supportedDatatypes:
@@ -49,5 +61,5 @@ app:
               propertyKeywords:
                 - gender
             constraints:
-              MAX_LENGTH: 6
-              MIN_LENGTH: 4
+              maxLength: 6
+              minLength: 4

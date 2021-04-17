@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.temporal.ChronoUnit;
 
 @Getter
-enum DateTimePrecisson {
+enum DateTimePrecission {
 
     YEARS("yyyy", "-01-01T00:00:00Z", ChronoUnit.YEARS),
     MONTHS("yyyy-MM", "-01T00:00:00Z", ChronoUnit.MONTHS),
@@ -18,7 +18,7 @@ enum DateTimePrecisson {
     private final String reminder;
     private final ChronoUnit unit;
 
-    DateTimePrecisson(String format, String reminder, ChronoUnit unit) {
+    DateTimePrecission(String format, String reminder, ChronoUnit unit) {
         this.format = format;
         this.reminder = reminder;
         this.unit = unit;

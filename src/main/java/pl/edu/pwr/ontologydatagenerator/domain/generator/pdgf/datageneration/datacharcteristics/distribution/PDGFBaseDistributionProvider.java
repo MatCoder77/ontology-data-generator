@@ -1,4 +1,4 @@
-package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.distribution;
+package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.datacharcteristics.distribution;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

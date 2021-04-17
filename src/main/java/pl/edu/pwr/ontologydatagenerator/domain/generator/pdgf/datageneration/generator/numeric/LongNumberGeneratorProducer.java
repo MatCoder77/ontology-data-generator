@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.datacharcteristics.constraints.PDGFDataPropertyConstraintsProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.constraints.RangeValue;
@@ -22,6 +23,7 @@ import static org.semanticweb.owlapi.vocab.OWL2Datatype.*;
 public class LongNumberGeneratorProducer implements DataPropertyGeneratorProducer {
 
     private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
+    private final PDGFDataPropertyConstraintsProvider constraintsProvider;
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -40,18 +42,18 @@ public class LongNumberGeneratorProducer implements DataPropertyGeneratorProduce
 
     private Long getMin(DataPropertyGenerationContext context) {
         return getMinFromRestritions(context)
-                .or(() -> getMinBasedOnInferenceRules(context))
                 .or(() -> getMinBasedOnConfiguration(context))
+                .or(() -> getMinBasedOnInferenceRules(context))
                 .orElseGet(() -> getMinForDatatype(context));
-    }
-
-    private ValueRangeConstraints<Long> getRangeConstraints(DataPropertyGenerationContext context) {
-        return ValueRangeConstraints.of(context.getRestrictions(), Long::parseLong);
     }
 
     private Optional<Long> getMinFromRestritions(DataPropertyGenerationContext context) {
         return getRangeConstraints(context).getMin()
                 .map(this::getIncrementedMinIfNotInclusive);
+    }
+
+    private ValueRangeConstraints<Long> getRangeConstraints(DataPropertyGenerationContext context) {
+        return ValueRangeConstraints.of(context.getRestrictions(), Long::parseLong);
     }
 
     private Long getIncrementedMinIfNotInclusive(RangeValue<Long> min) {
@@ -61,11 +63,16 @@ public class LongNumberGeneratorProducer implements DataPropertyGeneratorProduce
         return min.getValue() + 1L;
     }
 
-    private Optional<Long> getMinBasedOnInferenceRules(DataPropertyGenerationContext context) {
-        return Optional.empty();
+    private Optional<Long> getMinBasedOnConfiguration(DataPropertyGenerationContext context) {
+        return getRangeConstraintsFromConfiguration(context).getMin()
+                .map(this::getIncrementedMinIfNotInclusive);
     }
 
-    private Optional<Long> getMinBasedOnConfiguration(DataPropertyGenerationContext context) {
+    private ValueRangeConstraints<Long> getRangeConstraintsFromConfiguration(DataPropertyGenerationContext context) {
+        return ValueRangeConstraints.of(constraintsProvider.getDataPropertyConstraints(context.getDataProperty()), Long::parseLong);
+    }
+
+    private Optional<Long> getMinBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 
@@ -83,8 +90,8 @@ public class LongNumberGeneratorProducer implements DataPropertyGeneratorProduce
 
     private Long getMax(DataPropertyGenerationContext context) {
         return getMaxFromRestritions(context)
-                .or(() -> getMaxBasedOnInferenceRules(context))
                 .or(() -> getMaxBasedOnConfiguration(context))
+                .or(() -> getMaxBasedOnInferenceRules(context))
                 .orElseGet(() -> getMaxForDatatype(context));
     }
 
@@ -100,11 +107,12 @@ public class LongNumberGeneratorProducer implements DataPropertyGeneratorProduce
         return max.getValue() - 1L;
     }
 
-    private Optional<Long> getMaxBasedOnInferenceRules(DataPropertyGenerationContext context) {
-        return Optional.empty();
+    private Optional<Long> getMaxBasedOnConfiguration(DataPropertyGenerationContext context) {
+        return getRangeConstraintsFromConfiguration(context).getMax()
+                .map(this::getDecrementedMaxIfNotInclusive);
     }
 
-    private Optional<Long> getMaxBasedOnConfiguration(DataPropertyGenerationContext context) {
+    private Optional<Long> getMaxBasedOnInferenceRules(DataPropertyGenerationContext context) {
         return Optional.empty();
     }
 

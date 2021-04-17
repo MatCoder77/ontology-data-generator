@@ -23,6 +23,10 @@ public class SemanticSimilarityService {
     private static final Pattern PUNCTSPACE = Pattern.compile("[ \\p{Punct}]+");
     private static final Pattern TRANSITION = Pattern.compile("(?<=[^\\p{Lu}])(?=[\\p{Lu}])|(?=[\\p{Lu}][^\\p{Lu}])");
 
+    public double calculateSemanticSimilarity(String word1, String word2) {
+        return calculateSemanticSimilarity(Collections.singleton(word1), Collections.singleton(word2));
+    }
+
     public double calculateSemanticSimilarity(Collection<String> words1, Collection<String> words2) {
         List<List<String>> tokenizedAndPreprocessedWords1 = getTokenizedAndPreprocessedWords(words1);
         List<List<String>> tokenizedAndPreprocessedWords2 = getTokenizedAndPreprocessedWords(words2);
@@ -35,7 +39,7 @@ public class SemanticSimilarityService {
         List<String> words1 = buildMultipartWordFromTokens(tokenizedAndPreprocessedWords1);
         List<String> words2 = buildMultipartWordFromTokens(tokenizedAndPreprocessedWords2);
         double[][] similarityMatrix = LIN_SIMILARITY_METRIC.getSimilarityMatrix(words1.toArray(new String[0]), words2.toArray(new String[0]));
-        return HungarianMaximumMathingAlgorithm.calculateSumForMaximumMatching(similarityMatrix);
+        return HungarianMaximumMathingAlgorithm.calculateNormalizedSumForMaximumMatching(similarityMatrix);
     }
 
     private List<String> buildMultipartWordFromTokens(Collection<? extends Collection<String>> tokenizedAndPreprocessedWords) {

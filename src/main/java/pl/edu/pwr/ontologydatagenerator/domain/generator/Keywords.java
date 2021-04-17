@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -13,11 +14,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class Keywords {
 
-    private Set<String> conceptKeywords;
-    private Set<String> propertyKeywords;
-
-    public static Keywords of(Set<String> conceptKeywords, Set<String> propertyKeywords) {
-        return new Keywords(conceptKeywords, propertyKeywords);
-    }
+    private Set<String> conceptKeywords = new LinkedHashSet<>();
+    private Set<String> propertyKeywords = new LinkedHashSet<>();
 
 }

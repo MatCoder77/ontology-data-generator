@@ -39,8 +39,9 @@ app:
               - XSD_STRING
             keywords:
               conceptKeywords:
-                - person
+                - female person
                 - female
+                - woman
               propertyKeywords:
                 - first name
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names_male.dict
@@ -48,10 +49,33 @@ app:
               - XSD_STRING
             keywords:
               conceptKeywords:
-                - person
-                - female
+                - male person
+                - male
+                - man
               propertyKeywords:
                 - first name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - person
+              propertyKeywords:
+                - first name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/last_names.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - person
+              propertyKeywords:
+                - last name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/mail_provider.dict
+            supportedDatatypes:
+              - XSD_STRING
+            keywords:
+              propertyKeywords:
+                - email provider
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/gender.dict
             supportedDatatypes:
               - XSD_STRING

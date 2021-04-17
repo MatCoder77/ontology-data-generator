@@ -1,81 +1,57 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.GeneratorSelector;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.objectproperty.ObjectProperty;
-import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalStateAppException;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalArgumentAppException;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @ParametersAreNonnullByDefault
 public class PDGFGeneratorService {
 
-    private static final String NOT_SUPPORTED_RANGE_TYPE_MSG ="{0} ranges are currently not supported!";
-
     private final List<DataPropertyGeneratorProducer> dataPropertyGeneratorProducers;
     private final ObjectPropertyGeneratorProducer objectPropertyGeneratorProducer;
+    private final GenerationContextProvider generationContextProvider;
 
     public Generator getGenerator(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
-        DataRangeType rangeType = getRangeType(dataProperty);
-        return switch (rangeType) {
-            case DATATYPE -> getGeneratorForDatatypeRange(dataProperty, concept, container);
-            case DATATYPE_RESTRICTION -> getGeneratorForDatatypeRestrictionRange(dataProperty, concept, container);
-            default -> throw getUnsupportedException(rangeType);
-        };
+        DataPropertyGenerationContext generationContext = generationContextProvider.getGenerationContext(dataProperty, concept, container);
+        return selectBestGenerator(generationContext);
     }
 
-    private DataRangeType getRangeType(DataProperty dataProperty) {
-        return dataProperty.getRange().getRange().getDataRangeType();
+    private Generator selectBestGenerator(DataPropertyGenerationContext context) {
+        List<DataPropertyGeneratorProducer> dataPropertyGeneratorProducersForDatatype = getApplicableGeneratorProducers(context);
+        DataPropertyGeneratorProducer bestDataPropertyGeneratorProducer = getBestRatedGeneratorProducer(context, dataPropertyGeneratorProducersForDatatype);
+        Generator selectedGenerator = bestDataPropertyGeneratorProducer.buildGenerator(context);
+        log.info("Selected {} generator for property {} in concept {}", selectedGenerator.getClass().getSimpleName(), context.getDataProperty().getName(), context.getConcept().getName());
+        return selectedGenerator;
     }
 
-    private Generator getGeneratorForDatatypeRange(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
-        OWL2Datatype datatype = getRangeAsOWLDatatype(dataProperty).getBuiltInDatatype();
-        DataPropertyGenerationContext generationContext = new DataPropertyGenerationContext(datatype, Collections.emptyList(), dataProperty, concept, container);
-        GeneratorSelector generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
-        return generatorProvider.selectGenerator();
+    private List<DataPropertyGeneratorProducer> getApplicableGeneratorProducers(DataPropertyGenerationContext generationContext) {
+        return dataPropertyGeneratorProducers.stream()
+                .filter(producer -> producer.isApplicable(generationContext))
+                .collect(Collectors.toList());
     }
 
-    private OWLDatatype getRangeAsOWLDatatype(DataProperty dataProperty) {
-        return dataProperty.getRange().getRange().asOWLDatatype();
-    }
-
-    private Generator getGeneratorForDatatypeRestrictionRange(DataProperty dataProperty, Concept concept, OntologyContainer<OWLOntology> container) {
-        OWLDatatypeRestriction range = getRangeAsOWLDatatypeRestriction(dataProperty);
-        OWL2Datatype datatype = getBuildInDatatype(range);
-        Set<OWLFacetRestriction> restrictions = range.getFacetRestrictions();
-        DataPropertyGenerationContext generationContext = new DataPropertyGenerationContext(datatype, restrictions, dataProperty, concept, container);
-        PDGFDataPropertyGeneratorProvider generatorProvider = new PDGFDataPropertyGeneratorProvider(generationContext, dataPropertyGeneratorProducers);
-        return generatorProvider.selectGenerator();
-    }
-
-    private OWLDatatypeRestriction getRangeAsOWLDatatypeRestriction(DataProperty dataProperty) {
-        return (OWLDatatypeRestriction) dataProperty.getRange().getRange();
-    }
-
-    private OWL2Datatype getBuildInDatatype(OWLDatatypeRestriction range) {
-        if (range.getDatatype().isBuiltIn()) {
-            return range.getDatatype().getBuiltInDatatype();
-        }
-        throw new IllegalStateAppException("Cannot select generator for not build in data type.");
-    }
-
-    private UnsupportedOperationException getUnsupportedException(DataRangeType rangeType) {
-        return new UnsupportedOperationException(MessageFormat.format(NOT_SUPPORTED_RANGE_TYPE_MSG, rangeType.getName()));
+    private DataPropertyGeneratorProducer getBestRatedGeneratorProducer(DataPropertyGenerationContext context, Collection<DataPropertyGeneratorProducer> dataPropertyGeneratorProducers) {
+        return dataPropertyGeneratorProducers.stream()
+                .max(Comparator.comparingDouble(producer -> producer.getScore(context)))
+                .orElseThrow(() -> new IllegalArgumentAppException("Error, at least one generator should be available!"));
     }
 
     public Generator getGenerator(ObjectProperty objectProperty, Concept concept, Collection<Concept> conceptsToInstatniate, OntologyContainer<OWLOntology> container) {
-        ObjectPropertyGenerationContext context = new ObjectPropertyGenerationContext(objectProperty, concept, new HashSet<>(conceptsToInstatniate), container);
+        ObjectPropertyGenerationContext context = generationContextProvider.getGenerationContext(objectProperty, concept, new HashSet<>(conceptsToInstatniate), container);
         return objectPropertyGeneratorProducer.buildGenerator(context);
     }
 

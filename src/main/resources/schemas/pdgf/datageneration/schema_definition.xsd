@@ -200,6 +200,7 @@
         <xs:element ref="gen_LongNumber"/>
         <xs:element ref="gen_Padding"/>
         <xs:element ref="gen_DateTime"/>
+        <xs:element ref="gen_Template"/>
       </xs:choice>
       <xs:attribute name="concatenateResults" use="required" type="xs:boolean"/>
       <xs:attribute name="delimitEmptyValues" type="xs:boolean"/>

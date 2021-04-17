@@ -1,28 +1,30 @@
 package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.dictionary;
 
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DictionaryDataProvider;
-import pl.edu.pwr.ontologydatagenerator.domain.similarity.SemanticSimilarityService;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
+import pl.edu.pwr.ontologydatagenerator.domain.similarity.ConceptSimilarityService;
+import pl.edu.pwr.ontologydatagenerator.domain.similarity.PropertySimilarityService;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.dataproperty.DataProperty;
-import pl.edu.pwr.ontologydatagenerator.domain.ontology.identifier.Identifier;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.transform.TransformUtils;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class DictionaryService {
 
     private final DictionaryDataProvider dictionaryDataProvider;
-    private final SemanticSimilarityService semanticSimilarityService;
+    private final ConceptSimilarityService conceptSimilarityService;
+    private final PropertySimilarityService propertySimilarityService;
 
     public Set<OWL2Datatype> getAllSupportedDatatypes() {
         return dictionaryDataProvider.getAllSupportedDatatypes();
@@ -38,22 +40,21 @@ public class DictionaryService {
     public final Optional<Map.Entry<Dictionary, Double>> findBestDictionary(DataProperty dataProperty, Concept concept, Set<OWL2Datatype> supportedDataTypes, Predicate<Dictionary>... predicates) {
         return getDictionariesSortedDescendingByScore(dataProperty, concept, dictionaryDataProvider.getDictionariesForDataTypes(supportedDataTypes))
                 .entrySet().stream()
-                .filter(scoreByDictionary -> combineFilters(predicates).test(scoreByDictionary.getKey()))
+                .filter(scoreByDictionary -> TransformUtils.combineFilters(predicates).test(scoreByDictionary.getKey()))
                 .findFirst();
     }
 
     private Map<Dictionary, Double> getDictionariesSortedDescendingByScore(DataProperty dataProperty, Concept concept, Collection<Dictionary> dictionaries) {
-        List<Dictionary> dictionariesForConcept = getDictionariesForConcept(concept, dictionaries);
+        Map<Dictionary, Double> dictionariesForConcept = getDictionariesForConcept(concept, dictionaries);
         return caclulatePropertyScoreForDictionaries(dataProperty, dictionariesForConcept).entrySet().stream()
-                .sorted(Collections.reverseOrder(Comparator.comparingDouble(Map.Entry::getValue)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                .sorted(Collections.reverseOrder(Comparator.comparingDouble((Map.Entry<Dictionary, Pair<Double, Double>> dictionaryAndScores) -> dictionaryAndScores.getValue().getLeft()).thenComparing(dictionaryAndScores -> dictionaryAndScores.getValue().getRight())))
+                .collect(Collectors.toMap(Map.Entry::getKey, dictionaryAndScores -> dictionaryAndScores.getValue().getLeft(), (e1, e2) -> e1, LinkedHashMap::new));
     }
 
-    private List<Dictionary> getDictionariesForConcept(Concept concept, Collection<Dictionary> dictionaries) {
+    private Map<Dictionary, Double> getDictionariesForConcept(Concept concept, Collection<Dictionary> dictionaries) {
         return calculateConceptScoresForDictionaries(concept, dictionaries).entrySet().stream()
                 .filter(dictionaryAndScore -> isSuitableForConcept(dictionaryAndScore.getKey(), dictionaryAndScore.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private boolean isSuitableForConcept(Dictionary dictionary, double score) {
@@ -66,47 +67,57 @@ public class DictionaryService {
     }
 
     private double calculateConceptScoreForDictionary(Concept concept, Dictionary dictionary) {
-        Set<String> conceptNames = Sets.union(getAllConceptAliases(concept), getSuperConcepts(concept));
-        return semanticSimilarityService.calculateSemanticSimilarity(conceptNames, dictionary.getKeywords().getConceptKeywords());
+        return conceptSimilarityService.calculateConceptSimilarityForKeywrods(concept, dictionary.getKeywords().getConceptKeywords());
     }
 
-    private Set<String> getAllConceptAliases(Concept concept) {
-        return concept.getEquivalentConcepts().stream()
-                .map(Identifier::getName)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<String> getSuperConcepts(Concept concept) {
-        return concept.getSuperConcepts().stream()
-                .map(Identifier::getName)
-                .collect(Collectors.toSet());
-    }
-
-    private Map<Dictionary, Double> caclulatePropertyScoreForDictionaries(DataProperty dataProperty, Collection<Dictionary> dictionaries) {
-        return dictionaries.stream()
-                .collect(Collectors.toMap(Function.identity(), dictionary -> calculatePropertyScoreForDictionary(dataProperty, dictionary)));
+    private Map<Dictionary, Pair<Double, Double>> caclulatePropertyScoreForDictionaries(DataProperty dataProperty, Map<Dictionary, Double> dictionaries) {
+        return dictionaries.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, dictionaryAndScore -> Pair.of(calculatePropertyScoreForDictionary(dataProperty, dictionaryAndScore.getKey()), dictionaryAndScore.getValue())));
     }
 
     private double calculatePropertyScoreForDictionary(DataProperty dataProperty, Dictionary dictionary) {
-        Set<String> propertyNames = Sets.union(getAllPropertyAliases(dataProperty), getSuperProperties(dataProperty));
-        return semanticSimilarityService.calculateSemanticSimilarity(propertyNames, dictionary.getKeywords().getPropertyKeywords());
+        return propertySimilarityService.calculatePropertySimilarityForKeywords(dataProperty, dictionary.getKeywords().getPropertyKeywords());
     }
 
-    private Set<String> getAllPropertyAliases(DataProperty dataProperty) {
-        return dataProperty.getEquivalentProperties().stream()
-                .map(Identifier::getName)
-                .collect(Collectors.toSet());
+    public boolean isDictionaryAvailableForProperty(String propertyName, DataPropertyGenerationContext context, Set<OWL2Datatype> supportedDatatypes) {
+        return findBestApllicableDictionary(propertyName, context, supportedDatatypes)
+                .map(scoreByDictionary -> scoreByDictionary.getValue() >= 0.75)
+                .orElse(false);
     }
 
-    private Set<String> getSuperProperties(DataProperty dataProperty) {
-        return dataProperty.getSuperProperties().stream()
-                .map(Identifier::getName)
-                .collect(Collectors.toSet());
+    public Dictionary requireBestApllicableDictionary(String propertyName, DataPropertyGenerationContext context, Set<OWL2Datatype> supportedDatatypes) {
+        return findBestApllicableDictionary(propertyName, context, supportedDatatypes)
+                .map(Map.Entry::getKey)
+                .orElseThrow();
+    }
+
+    public Optional<Map.Entry<Dictionary, Double>> findBestApllicableDictionary(String propertyName, DataPropertyGenerationContext context, Set<OWL2Datatype> supportedDatatypes) {
+        return findBestDictionary(propertyName, context.getConcept(), supportedDatatypes)
+                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= 0.75);
     }
 
     @SafeVarargs
-    private static <T> Predicate<T> combineFilters(Predicate<T>... predicates) {
-        return Stream.of(predicates).reduce(x -> true, Predicate::and);
+    private Optional<Map.Entry<Dictionary, Double>> findBestDictionary(String dataProperty, Concept concept, Set<OWL2Datatype> supportedDataTypes, Predicate<Dictionary>... predicates) {
+        return getDictionariesSortedDescendingByScore(dataProperty, concept, dictionaryDataProvider.getDictionariesForDataTypes(supportedDataTypes))
+                .entrySet().stream()
+                .filter(scoreByDictionary -> TransformUtils.combineFilters(predicates).test(scoreByDictionary.getKey()))
+                .findFirst();
+    }
+
+    private Map<Dictionary, Double> getDictionariesSortedDescendingByScore(String dataProperty, Concept concept, Collection<Dictionary> dictionaries) {
+        Map<Dictionary, Double> dictionariesForConcept = getDictionariesForConcept(concept, dictionaries);
+        return caclulatePropertyScoreForDictionaries(dataProperty, dictionariesForConcept).entrySet().stream()
+                .sorted(Collections.reverseOrder(Comparator.comparingDouble((Map.Entry<Dictionary, Pair<Double, Double>> dictionaryAndScores) -> dictionaryAndScores.getValue().getLeft()).thenComparing(dictionaryAndScores -> dictionaryAndScores.getValue().getRight())))
+                .collect(Collectors.toMap(Map.Entry::getKey, dictionaryAndScores -> dictionaryAndScores.getValue().getLeft(), (e1, e2) -> e1, LinkedHashMap::new));
+    }
+
+    private Map<Dictionary, Pair<Double, Double>> caclulatePropertyScoreForDictionaries(String dataProperty, Map<Dictionary, Double> dictionaries) {
+        return dictionaries.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, dictionaryAndScore -> Pair.of(calculatePropertyScoreForDictionary(dataProperty, dictionaryAndScore.getKey()), dictionaryAndScore.getValue())));
+    }
+
+    private double calculatePropertyScoreForDictionary(String dataProperty, Dictionary dictionary) {
+        return propertySimilarityService.calculatePropertySimilarityForPropertyName(dataProperty, dictionary.getKeywords().getPropertyKeywords());
     }
 
 }

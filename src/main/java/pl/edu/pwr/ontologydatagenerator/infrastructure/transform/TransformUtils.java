@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 @UtilityClass
@@ -138,6 +139,11 @@ public class TransformUtils {
                 .collect(Collectors.toMap(
                         entry -> keyTransformer.apply(entry.getKey()),
                         entry -> elementTransformer.apply(entry.getValue())));
+    }
+
+    @SafeVarargs
+    public static <T> Predicate<T> combineFilters(Predicate<T>... predicates) {
+        return Stream.of(predicates).reduce(x -> true, Predicate::and);
     }
 
 }

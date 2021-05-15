@@ -609,6 +609,7 @@
           <xs:element ref="gen_ReferenceValue"/>
           <xs:element ref="gen_BigBenchReview"/>
           <xs:element ref="gen_WeightedListItem"/>
+          <xs:element ref="gen_DictList"/>
           <xs:element ref="gen_LongNumber"/>
         </xs:choice>
       </xs:sequence>

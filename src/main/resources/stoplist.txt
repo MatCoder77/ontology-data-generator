@@ -81,6 +81,7 @@ it
 its
 itself
 like
+likes
 many
 me
 mine
@@ -153,6 +154,8 @@ tother
 toward
 towards
 twain
+type
+kind
 under
 underneath
 unless

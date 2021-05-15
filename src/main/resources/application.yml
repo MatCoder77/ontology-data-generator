@@ -1,27 +1,59 @@
 app:
+  owl:
+    output-ontology-syntax: FUNCTIONAL
+  datastore:
+    url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore
+    input: input
+    output: output
+    dictionary: dictionary
+    schema: schema
+    configuration: configuration
   generator:
     pdgf:
       home:
         url: file:/home/mateusz/Documents/Praca Magisterska/PDGF/PDGFEnvironment
       datageneration:
-        seed: 87467532L
+        seed: 123456789L
         rng: PdgfDefaultRandom
-        scalefactor: 10
+        scalefactor: 1
         size: 10
         identifier-field-name: __identifier__
         tables:
-          baseSize: 10
+          Company: 1
         properties:
-          __long__test__:
-            distribution:
-              type: Beta
-              beta: 2.0
-              alpha: 1.9977
-          birthDate:
+          birthdate:
             constraints:
-              maxLength: 1940-01-01T00:00:00Z
-              minLength: 1942-01-01T00:00:00Z
-            precision: YEARS
+              minInclusive: 1970-01-01T00:00:00Z
+              maxInclusive: 2000-01-01T00:00:00Z
+            precision: DAYS
+          foundationYear:
+            distribution:
+              type: Normal
+              mean: 2000
+              sd: 15
+            constrainsts:
+              maxInclusive: 2019
+          height:
+            distribution:
+              type: Normal
+              mean: 170
+              sd: 15
+          weight:
+            distribution:
+              type: Normal
+              mean: 75.0
+              sd: 20.0
+            precision: 2
+          salary:
+            distribution:
+              type: Normal
+              mean: 4800
+              sd: 2500
+          experience:
+            distribution:
+              type: Normal
+              mean: 5
+              sd: 3
         dictionaries:
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/xsd_language_dict.txt
             supportedDatatypes:
@@ -34,28 +66,9 @@ app:
                 - lang
               propertyKeywords:
                 - prop1
-          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names_female.dict
-            supportedDatatypes:
-              - XSD_STRING
-            keywords:
-              conceptKeywords:
-                - female person
-                - female
-                - woman
-              propertyKeywords:
-                - first name
-          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names_male.dict
-            supportedDatatypes:
-              - XSD_STRING
-            keywords:
-              conceptKeywords:
-                - male person
-                - male
-                - man
-              propertyKeywords:
-                - first name
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/first_names.dict
             supportedDatatypes:
+              - RDFS_LITERAL
               - XSD_STRING
             keywords:
               conceptKeywords:
@@ -64,26 +77,63 @@ app:
                 - first name
           - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/last_names.dict
             supportedDatatypes:
+              - RDFS_LITERAL
               - XSD_STRING
             keywords:
               conceptKeywords:
                 - person
               propertyKeywords:
                 - last name
-          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/mail_provider.dict
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/email_providers.dict
             supportedDatatypes:
+              - RDFS_LITERAL
               - XSD_STRING
             keywords:
               propertyKeywords:
                 - email provider
-          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/gender.dict
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/geographical/countries.dict
             supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_STRING
+            keywords:
+              propertyKeywords:
+                - country
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/personal_data/hobbies.dict
+            supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_STRING
+            keywords:
+              propertyKeywords:
+                - hobby
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/job/occupations.dict
+            supportedDatatypes:
+              - RDFS_LITERAL
               - XSD_STRING
             keywords:
               conceptKeywords:
-                - person
+                - occupation
               propertyKeywords:
-                - gender
-            constraints:
-              maxLength: 6
-              minLength: 4
+                - name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/job/contract_types.dict
+            supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_STRING
+            keywords:
+              propertyKeywords:
+                - contract type
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/job/company_names.dict
+            supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_STRING
+            keywords:
+              conceptKeywords:
+                - company
+              propertyKeywords:
+                - name
+          - url: file:/home/mateusz/IdeaProjects/ontology-data-generator/datastore/dictionary/websites.dict
+            supportedDatatypes:
+              - RDFS_LITERAL
+              - XSD_ANY_URI
+            keywords:
+              propertyKeywords:
+                - website

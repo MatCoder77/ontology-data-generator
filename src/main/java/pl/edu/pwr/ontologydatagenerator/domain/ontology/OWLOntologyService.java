@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.ontology;
 
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.HermiT.ReasonerFactory;
+import org.springframework.core.env.Environment;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.Concept;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.concept.OWLConceptService;
@@ -49,6 +50,7 @@ class OWLOntologyService implements OntologyService<OWLOntology, Instance>  {
     private final OWLObjectPropertyService objectPropertyService;
     private final OWLConceptService conceptService;
     private final OWLInstanceService instanceService;
+    private final Environment environment;
 
     @Override
     public OWLOntology loadOntology(URI url) {
@@ -69,16 +71,29 @@ class OWLOntologyService implements OntologyService<OWLOntology, Instance>  {
             log.error("Cannot save ontology to resource: ", e);
             throw new IllegalStateException(e);
         }
-
     }
 
     private Consumer<OutputStream> getOntologySaver(OWLOntology ontology) {
-        return ThrowingConsumer.wrapper(outputStream -> ontologyManager.saveOntology(ontology, new FunctionalSyntaxDocumentFormat(), outputStream));
+
+        return ThrowingConsumer.wrapper(outputStream -> ontologyManager.saveOntology(ontology, getDocumentFormat(), outputStream));
+    }
+
+    private OWLDocumentFormat getDocumentFormat() {
+        return Optional.ofNullable(environment.getProperty("app.owl.output-ontology-syntax", OWLSyntax.class))
+                .map(OWLSyntax::getFormat)
+                .orElseGet(FunctionalSyntaxDocumentFormat::new);
     }
 
     @Override
     public void validateOntology(OWLOntology ontology) {
         ontologyValidator.validate(ontology);
+    }
+
+    @Override
+    public void generateInstances(OWLOntology ontology, GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine) {
+        OntologyContainer<OWLOntology> container = parseOntology(ontology);
+        Stream<Instance> instanceStream = generationEngine.generateData(container);
+        instanceStream.forEach(instance -> instanceService.instantiate(instance, container));
     }
 
     private OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
@@ -116,13 +131,6 @@ class OWLOntologyService implements OntologyService<OWLOntology, Instance>  {
 
     private Map<Identifier, ObjectProperty> getObjectPropertiesByIdnetifiers(Collection<ObjectProperty> objectProperties) {
         return TransformUtils.transformToMap(objectProperties, ObjectProperty::getIdentifier, Function.identity());
-    }
-
-    @Override
-    public void generateInstances(OWLOntology ontology, GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine) {
-        OntologyContainer<OWLOntology> container = parseOntology(ontology);
-        Stream<Instance> instanceStream = generationEngine.generateData(container);
-        instanceStream.forEach(instance -> instanceService.instantiate(instance, container));
     }
 
 }

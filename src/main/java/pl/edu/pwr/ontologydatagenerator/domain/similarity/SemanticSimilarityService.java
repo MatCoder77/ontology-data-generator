@@ -61,7 +61,8 @@ public class SemanticSimilarityService {
     private List<String> getTokenizedAndPreprocessedWord(String word) {
         List<String> tokenizedWords = splitToWords(word);
         List<String> stemmedWords = getStemmedWords(tokenizedWords);
-        return getWithoutStopWords(stemmedWords);
+        List<String> lowercasedWords = getLowercasedWords(stemmedWords);
+        return getWithoutStopWords(lowercasedWords);
     }
 
     private List<String> splitToWords(String text) {
@@ -82,6 +83,12 @@ public class SemanticSimilarityService {
             return new ArrayList<>(words);
         }
         return wordsWithoutStopWords;
+    }
+
+    private List<String> getLowercasedWords(Collection<String> words) {
+        return words.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
     }
 
     private double calculateSimilarityWithSeparateTokens(List<List<String>> tokenizedAndPreprocessedWords1, List<List<String>> tokenizedAndPreprocessedWords2) {

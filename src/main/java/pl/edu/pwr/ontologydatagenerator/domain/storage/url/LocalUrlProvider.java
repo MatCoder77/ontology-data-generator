@@ -13,7 +13,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 class LocalUrlProvider implements UrlProvider {
 
-    @Value("${app.datastore}") private final String baseUrl;
+    @Value("${app.datastore.url}") private final String baseUrl;
 
     @Override
     public URI getUrlForResource(String... pathSegments) {

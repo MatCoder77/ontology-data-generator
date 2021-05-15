@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
+import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.Distribution;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGeneratorProducer;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.dictionary.DictionaryService;
@@ -36,6 +38,7 @@ public class DictionaryGeneratorProducer implements DataPropertyGeneratorProduce
     private static final Function<String, Temporal> PARSER = string -> formatter.parse(string, OffsetDateTime::from);
 
     private final DictionaryService dictionaryService;
+    private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
 
     @Override
     public Set<OWL2Datatype> getSupportedDataTypes() {
@@ -47,7 +50,8 @@ public class DictionaryGeneratorProducer implements DataPropertyGeneratorProduce
         Dictionary dictionary = dictionaryService.findBestDictionary(context.getDataProperty(), context.getConcept(), getSupportedDataTypes())
                 .map(Map.Entry::getKey)
                 .orElseThrow(() -> new IllegalArgumentAppException("Dictionary shold be present when method is invoked!"));
-        return new DictionaryGenerator(dictionary.getUrl(), null, 1);
+        Distribution distribution = distributionProvider.getDistribution(context);
+        return new DictionaryGenerator(dictionary.getUrl(), distribution, 1);
     }
 
     @Override

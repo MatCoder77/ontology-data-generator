@@ -9,8 +9,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.datacharcteristics.constraints.PDGFDataPropertyConstraintsProvider;
-import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.dictionary.PDGFDictionaryDataProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.Instance;
@@ -30,8 +28,6 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 	private final UrlProvider localUrlProvider;
 	private final OntologyService<OWLOntology, Instance> ontologyService;
 	private final GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine;
-	private final PDGFDataPropertyConstraintsProvider constraintsProvider;
-	private final PDGFDictionaryDataProvider dictionaryDataProvider;
 
 	public static void main(String[] args) {
 		SpringApplication.run(OntologyDataGeneratorApplication.class, args);

@@ -14,4 +14,6 @@ public interface OntologyService<T, R> {
 
     void saveOntology(T ontology, URI url);
 
+    OntologyContainer<T> parseOntology(T ontology);
+
 }

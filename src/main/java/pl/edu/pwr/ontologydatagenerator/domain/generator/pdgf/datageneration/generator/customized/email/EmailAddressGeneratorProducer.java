@@ -125,7 +125,7 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
     }
 
     public Optional<DataProperty> getProperty(Set<String> propertyKeywords, DataPropertyGenerationContext context) {
-        return propertySimilarityService.findSimilarProperty(context.getConcept(), propertyKeywords, 1, Set.of(XSD_STRING), context.getContainer());
+        return propertySimilarityService.findSimilarProperty(context.getConcept(), propertyKeywords, 1, Set.of(RDFS_LITERAL, XSD_STRING), context.getContainer());
     }
 
     public boolean isNotRestricted(DataPropertyGenerationContext context) {

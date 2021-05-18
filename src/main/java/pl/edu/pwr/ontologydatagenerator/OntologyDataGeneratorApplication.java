@@ -13,6 +13,7 @@ import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyService;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.instance.Instance;
 import pl.edu.pwr.ontologydatagenerator.domain.storage.url.UrlProvider;
+import pl.edu.pwr.ontologydatagenerator.infrastructure.evaluation.MetricsCalculator;
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalArgumentAppException;
 
 import java.net.URI;
@@ -28,6 +29,7 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 	private final UrlProvider localUrlProvider;
 	private final OntologyService<OWLOntology, Instance> ontologyService;
 	private final GenerationEngine<OntologyContainer<OWLOntology>, Instance> generationEngine;
+	private final MetricsCalculator metricsCalculator;
 
 	public static void main(String[] args) {
 		SpringApplication.run(OntologyDataGeneratorApplication.class, args);
@@ -44,6 +46,8 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 		URI outputOntologyUrl = getOutputOntologyUrl(ontologyFilename);
 		ontologyService.saveOntology(ontology, outputOntologyUrl);
 		ontologyService.validateOntology(ontology);
+		//OntologyContainer<OWLOntology> container = ontologyService.parseOntology(ontology);
+		//metricsCalculator.calculateMetrics(container);
 		log.info("Application finished successfully!");
 	}
 

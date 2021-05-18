@@ -96,7 +96,8 @@ class OWLOntologyService implements OntologyService<OWLOntology, Instance>  {
         instanceStream.forEach(instance -> instanceService.instantiate(instance, container));
     }
 
-    private OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
+    @Override
+    public OntologyContainer<OWLOntology> parseOntology(OWLOntology ontology) {
         OWLReasoner reasoner = getResasoner(ontology);
         Identifier ontologyIdentifier = getOntologyIdentifier(ontology);
         List<DataProperty> dataProperties = dataPropertyService.getDataProperties(reasoner);

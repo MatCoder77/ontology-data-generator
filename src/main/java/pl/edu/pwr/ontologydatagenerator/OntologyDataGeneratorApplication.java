@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.GenerationEngine;
 import pl.edu.pwr.ontologydatagenerator.domain.ontology.OntologyContainer;
@@ -17,6 +18,7 @@ import pl.edu.pwr.ontologydatagenerator.infrastructure.evaluation.MetricsCalcula
 import pl.edu.pwr.ontologydatagenerator.infrastructure.exception.IllegalArgumentAppException;
 
 import java.net.URI;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootApplication
@@ -24,6 +26,7 @@ import java.net.URI;
 @EnableConfigurationProperties
 public class OntologyDataGeneratorApplication implements CommandLineRunner {
 
+	private static final String CALCULATE_METRICS_ARG = "calculate-metrics";
 	@Value("${app.datastore.input}") private final String inputDirectory;
 	@Value("${app.datastore.output}") private final String outputDirectory;
 	private final UrlProvider localUrlProvider;
@@ -32,7 +35,9 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 	private final MetricsCalculator metricsCalculator;
 
 	public static void main(String[] args) {
-		SpringApplication.run(OntologyDataGeneratorApplication.class, args);
+		new SpringApplicationBuilder(OntologyDataGeneratorApplication.class)
+				.web(WebApplicationType.NONE)
+				.run(args);
 	}
 
 	@Override
@@ -46,8 +51,7 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 		URI outputOntologyUrl = getOutputOntologyUrl(ontologyFilename);
 		ontologyService.saveOntology(ontology, outputOntologyUrl);
 		ontologyService.validateOntology(ontology);
-		//OntologyContainer<OWLOntology> container = ontologyService.parseOntology(ontology);
-		//metricsCalculator.calculateMetrics(container);
+		calculateMetricsIfRequested(ontology, args);
 		log.info("Application finished successfully!");
 	}
 
@@ -66,6 +70,20 @@ public class OntologyDataGeneratorApplication implements CommandLineRunner {
 
 	private URI getOutputOntologyUrl(String ontologyFilename) {
 		return localUrlProvider.getUrlForResource(outputDirectory, ontologyFilename);
+	}
+
+	private void calculateMetricsIfRequested(OWLOntology ontology, String... args) {
+		if (isCalculateMetricsArgumentPresent(args)) {
+			OntologyContainer<OWLOntology> container = ontologyService.parseOntology(ontology);
+			metricsCalculator.calculateMetrics(container);
+		}
+	}
+
+	private boolean isCalculateMetricsArgumentPresent(String... args) {
+		return Stream.of(args)
+				.filter(CALCULATE_METRICS_ARG::equals)
+				.findAny()
+				.isPresent();
 	}
 
 }

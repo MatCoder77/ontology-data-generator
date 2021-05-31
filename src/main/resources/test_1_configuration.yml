@@ -15,7 +15,7 @@ app:
         seed: 123456789L
         rng: PdgfDefaultRandom
         scalefactor: 1
-        size: 10
+        size: 3
         identifier-field-name: __identifier__
         tables:
           Company: 1

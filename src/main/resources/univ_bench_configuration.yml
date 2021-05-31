@@ -14,11 +14,53 @@ app:
       datageneration:
         seed: 123456789L
         rng: PdgfDefaultRandom
-        scalefactor: 1
-        size: 10
+        scalefactor: 100
+        size: 3
         identifier-field-name: __identifier__
         tables:
-          Company: 1
+          AdministrativeStaff: 30
+          Article: 50
+          AssistantProfessor: 25
+          AssociateProfessor: 20
+          Book: 30
+          Chair: 15
+          ClericalStaff: 20
+          College: 100
+          ConferencePaper: 260
+          Course: 40
+          Dean: 20
+          Department: 7
+          Director: 15
+          Employee: 100
+          Faculty: 15
+          FullProfessor: 25
+          GraduateCourse: 30
+          GraduateStudent: 300
+          Institute: 20
+          JournalArticle: 200
+          Lecturer: 80
+          Manual: 90
+          Organization: 1
+          Person: 500
+          PostDoc: 25
+          Professor: 20
+          Program: 20
+          Publication: 200
+          Research: 200
+          ResearchAssistant: 60
+          ResearchGroup: 15
+          Schedule: 20
+          Software: 100
+          Specification: 30
+          Student: 500
+          SystemsStaff: 30
+          TeachingAssistant: 30
+          TechnicalReport: 70
+          UndergraduateStudent: 200
+          University: 1
+          UnofficialPublication: 45
+          VisitingProfessor: 15
+          Work: 90
         properties:
           birthdate:
             constraints:

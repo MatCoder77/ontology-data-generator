@@ -101,8 +101,12 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
         return isDataTypeSupported(context.getDatatype()) &&
                 areRestrictionsFulfilled(context) &&
                 getScore(context) >= threeshold &&
-                (areEmailFragmentFieldsPresents(context) || areDictionariesPresent(context)) &&
-                dictionaryService.isDictionaryAvailableForProperty(EMAIL_PROVIDER_PROPERTY_KEYWORD, context, getSupportedDataTypes());
+                areRequiredFiledsOrDictionariesPresent(context) &&
+                isDictionaryAvailableForEmailProvider(context);
+    }
+
+    private boolean areRequiredFiledsOrDictionariesPresent(DataPropertyGenerationContext context) {
+        return (areEmailFragmentFieldsPresents(context) || areDictionariesPresent(context));
     }
 
     private boolean areEmailFragmentFieldsPresents(DataPropertyGenerationContext context) {
@@ -130,7 +134,11 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
         return propertySimilarityService.findSimilarProperty(context.getConcept(), propertyKeywords, 1, Set.of(RDFS_LITERAL, XSD_STRING), context.getContainer());
     }
 
-    public boolean areRestrictionsFulfilled(DataPropertyGenerationContext context) {
+    private boolean isDictionaryAvailableForEmailProvider(DataPropertyGenerationContext context) {
+        return dictionaryService.isDictionaryAvailableForProperty(EMAIL_PROVIDER_PROPERTY_KEYWORD, context, getSupportedDataTypes());
+    }
+
+    private boolean areRestrictionsFulfilled(DataPropertyGenerationContext context) {
         return context.getRestrictions().isEmpty();
     }
 

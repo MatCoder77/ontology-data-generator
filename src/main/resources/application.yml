@@ -1,4 +1,5 @@
 app:
+  T: 0.75
   owl:
     output-ontology-syntax: FUNCTIONAL
   datastore:

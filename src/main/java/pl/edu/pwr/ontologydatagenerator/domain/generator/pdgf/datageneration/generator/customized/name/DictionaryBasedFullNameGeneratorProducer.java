@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
@@ -29,6 +30,7 @@ public class DictionaryBasedFullNameGeneratorProducer implements DataPropertyGen
     private static final String FIRST_NAME_PROPERTY_KEYWORD = "first name";
     private static final String LAST_NAME_PROPERTY_KEYWORD = "last name";
 
+    @Value("${app.T:0.75}") private final Double threeshold;
     private final DictionaryService dictionaryService;
     private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
     private final PropertySimilarityService propertySimilarityService;
@@ -59,7 +61,7 @@ public class DictionaryBasedFullNameGeneratorProducer implements DataPropertyGen
     @Override
     public boolean isApplicable(DataPropertyGenerationContext context) {
         return isDataTypeSupported(context.getDatatype()) &&
-                getPropertySimilarity(context) >= 0.75 &&
+                getPropertySimilarity(context) >= threeshold &&
                 dictionaryService.isDictionaryAvailableForProperty(FIRST_NAME_PROPERTY_KEYWORD, context, getSupportedDataTypes()) &&
                 dictionaryService.isDictionaryAvailableForProperty(LAST_NAME_PROPERTY_KEYWORD, context, getSupportedDataTypes()) &&
                 isPersonConcept(context) &&
@@ -69,7 +71,7 @@ public class DictionaryBasedFullNameGeneratorProducer implements DataPropertyGen
     }
 
     private boolean isPersonConcept(DataPropertyGenerationContext context) {
-        return conceptSimilarityService.calculateConceptSimilarityForKeywrods(context.getConcept(), PERSON_CONCEPT_KEYWORDS) >= 0.75;
+        return conceptSimilarityService.calculateConceptSimilarityForKeywrods(context.getConcept(), PERSON_CONCEPT_KEYWORDS) >= threeshold;
     }
 
     private Optional<DataProperty> getFirstNameProperty(DataPropertyGenerationContext context) {

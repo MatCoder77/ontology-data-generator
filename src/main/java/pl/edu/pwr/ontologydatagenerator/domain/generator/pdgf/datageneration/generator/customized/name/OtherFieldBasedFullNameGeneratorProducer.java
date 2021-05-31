@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Generator;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
@@ -24,6 +25,8 @@ public class OtherFieldBasedFullNameGeneratorProducer implements DataPropertyGen
     private static final String FIRST_NAME_PROPERTY_KEYWORD = "first name";
     private static final String LAST_NAME_PROPERTY_KEYWORD = "last name";
 
+
+    @Value("${app.T:0.75}") private final Double threeshold;
     private final PropertySimilarityService propertySimilarityService;
     private final ConceptSimilarityService conceptSimilarityService;
 
@@ -56,7 +59,7 @@ public class OtherFieldBasedFullNameGeneratorProducer implements DataPropertyGen
     }
 
     private boolean isPersonConcept(DataPropertyGenerationContext context) {
-        return conceptSimilarityService.calculateConceptSimilarityForKeywrods(context.getConcept(), PERSON_CONCEPT_KEYWORDS) >= 0.75;
+        return conceptSimilarityService.calculateConceptSimilarityForKeywrods(context.getConcept(), PERSON_CONCEPT_KEYWORDS) >= threeshold;
     }
 
     private DataProperty requireFirstNameProperty(DataPropertyGenerationContext context) {

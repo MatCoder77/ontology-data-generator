@@ -3,6 +3,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.dictionary;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DictionaryDataProvider;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.generator.DataPropertyGenerationContext;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DictionaryService {
 
+    @Value("${app.T:0.75}") private final Double threeshold;
     private final DictionaryDataProvider dictionaryDataProvider;
     private final ConceptSimilarityService conceptSimilarityService;
     private final PropertySimilarityService propertySimilarityService;
@@ -58,7 +60,7 @@ public class DictionaryService {
     }
 
     private boolean isSuitableForConcept(Dictionary dictionary, double score) {
-        return dictionary.getKeywords().getConceptKeywords().isEmpty() || score >= 0.75;
+        return dictionary.getKeywords().getConceptKeywords().isEmpty() || score >= threeshold;
     }
 
     private Map<Dictionary, Double> calculateConceptScoresForDictionaries(Concept concept, Collection<Dictionary> dictionaries) {
@@ -81,7 +83,7 @@ public class DictionaryService {
 
     public boolean isDictionaryAvailableForProperty(String propertyName, DataPropertyGenerationContext context, Set<OWL2Datatype> supportedDatatypes) {
         return findBestApllicableDictionary(propertyName, context, supportedDatatypes)
-                .map(scoreByDictionary -> scoreByDictionary.getValue() >= 0.75)
+                .map(scoreByDictionary -> scoreByDictionary.getValue() >= threeshold)
                 .orElse(false);
     }
 
@@ -93,7 +95,7 @@ public class DictionaryService {
 
     public Optional<Map.Entry<Dictionary, Double>> findBestApllicableDictionary(String propertyName, DataPropertyGenerationContext context, Set<OWL2Datatype> supportedDatatypes) {
         return findBestDictionary(propertyName, context.getConcept(), supportedDatatypes)
-                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= 0.75);
+                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= threeshold);
     }
 
     @SafeVarargs

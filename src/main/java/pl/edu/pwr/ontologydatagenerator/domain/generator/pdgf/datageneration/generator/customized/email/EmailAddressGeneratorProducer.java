@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
@@ -35,6 +36,7 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
     private static final String LAST_NAME_PROPERTY_KEYWORD = "last name";
     private static final Set<String> NAME_PROPERTY_KEYWORDS = Set.of("name");
 
+    @Value("${app.T:0.75}") private final Double threeshold;
     private final PropertySimilarityService propertySimilarityService;
     private final DictionaryService dictionaryService;
     private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
@@ -97,10 +99,10 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
     @Override
     public boolean isApplicable(DataPropertyGenerationContext context) {
         return isDataTypeSupported(context.getDatatype()) &&
-                getScore(context) >= 0.75 &&
+                areRestrictionsFulfilled(context) &&
+                getScore(context) >= threeshold &&
                 (areEmailFragmentFieldsPresents(context) || areDictionariesPresent(context)) &&
-                dictionaryService.isDictionaryAvailableForProperty(EMAIL_PROVIDER_PROPERTY_KEYWORD, context, getSupportedDataTypes()) &&
-                isNotRestricted(context);
+                dictionaryService.isDictionaryAvailableForProperty(EMAIL_PROVIDER_PROPERTY_KEYWORD, context, getSupportedDataTypes());
     }
 
     private boolean areEmailFragmentFieldsPresents(DataPropertyGenerationContext context) {
@@ -128,7 +130,7 @@ public class EmailAddressGeneratorProducer implements DataPropertyGeneratorProdu
         return propertySimilarityService.findSimilarProperty(context.getConcept(), propertyKeywords, 1, Set.of(RDFS_LITERAL, XSD_STRING), context.getContainer());
     }
 
-    public boolean isNotRestricted(DataPropertyGenerationContext context) {
+    public boolean areRestrictionsFulfilled(DataPropertyGenerationContext context) {
         return context.getRestrictions().isEmpty();
     }
 

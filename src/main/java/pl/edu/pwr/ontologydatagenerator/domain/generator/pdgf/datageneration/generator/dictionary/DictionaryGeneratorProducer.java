@@ -2,6 +2,7 @@ package pl.edu.pwr.ontologydatagenerator.domain.generator.pdgf.datageneration.ge
 
 import lombok.RequiredArgsConstructor;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.Dictionary;
 import pl.edu.pwr.ontologydatagenerator.domain.generator.DistributionProvider;
@@ -37,6 +38,7 @@ public class DictionaryGeneratorProducer implements DataPropertyGeneratorProduce
             .toFormatter();
     private static final Function<String, Temporal> PARSER = string -> formatter.parse(string, OffsetDateTime::from);
 
+    @Value("${app.T:0.75}") private final Double threeshold;
     private final DictionaryService dictionaryService;
     private final DistributionProvider<DataPropertyGenerationContext, Distribution> distributionProvider;
 
@@ -64,7 +66,7 @@ public class DictionaryGeneratorProducer implements DataPropertyGeneratorProduce
     private Optional<Map.Entry<Dictionary, Double>> findBestApllicableDictionary(DataPropertyGenerationContext context) {
         Predicate<Dictionary> fulfillsRestrictionsPredicate = dictionary -> restrictionsAreFulfilledByDictionary(dictionary, context);
         return dictionaryService.findBestDictionary(context.getDataProperty(), context.getConcept(), getSupportedDataTypes(), fulfillsRestrictionsPredicate)
-                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= 0.75);
+                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= threeshold);
     }
 
     @Override

@@ -191,16 +191,34 @@
   <xs:element name="gen_Sequential">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="gen_ReferenceValue"/>
+        <xs:element ref="gen_DetailFromDate"/>
+        <xs:element ref="gen_DictList"/>
+        <xs:element ref="gen_DoubleNumber"/>
+        <xs:element ref="gen_For"/>
+        <xs:element ref="gen_FormatNumber"/>
+        <xs:element ref="gen_Formula"/>
+        <xs:element ref="gen_Id"/>
+        <xs:element ref="gen_LongNumber"/>
+        <xs:element ref="gen_Null"/>
         <xs:element ref="gen_OtherFieldValue"/>
         <xs:element ref="gen_Probability"/>
-        <xs:element ref="gen_DictList"/>
+        <xs:element ref="gen_RandomListItems"/>
+        <xs:element ref="gen_RandomSentence"/>
+        <xs:element ref="gen_RandomString"/>
+        <xs:element ref="gen_ReferenceValue"/>
         <xs:element ref="gen_StaticValue"/>
-        <xs:element ref="gen_FormatNumber"/>
-        <xs:element ref="gen_LongNumber"/>
-        <xs:element ref="gen_Padding"/>
-        <xs:element ref="gen_DateTime"/>
         <xs:element ref="gen_Template"/>
+        <xs:element ref="gen_WeightedListItem"/>
+        <xs:element ref="gen_AddRandomSeconds"/>
+        <xs:element ref="gen_ConvertNumberToString"/>
+        <xs:element ref="gen_DateTime"/>
+        <xs:element ref="gen_ExtendedFormula"/>
+        <xs:element ref="gen_If"/>
+        <xs:element ref="gen_MaskString"/>
+        <xs:element ref="gen_PermutationReference"/>
+        <xs:element ref="gen_PrePostfix"/>
+        <xs:element ref="gen_Sequential"/>
+        <xs:element ref="gen_Switch"/>
       </xs:choice>
       <xs:attribute name="concatenateResults" use="required" type="xs:boolean"/>
       <xs:attribute name="delimitEmptyValues" type="xs:boolean"/>
@@ -603,14 +621,34 @@
         <xs:element minOccurs="0" ref="staticValue"/>
         <xs:element minOccurs="0" ref="getValue"/>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="gen_DetailFromDate"/>
+          <xs:element ref="gen_DictList"/>
+          <xs:element ref="gen_DoubleNumber"/>
+          <xs:element ref="gen_For"/>
+          <xs:element ref="gen_FormatNumber"/>
+          <xs:element ref="gen_Formula"/>
+          <xs:element ref="gen_Id"/>
+          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="gen_Null"/>
           <xs:element ref="gen_OtherFieldValue"/>
+          <xs:element ref="gen_Probability"/>
+          <xs:element ref="gen_RandomListItems"/>
           <xs:element ref="gen_RandomSentence"/>
           <xs:element ref="gen_RandomString"/>
           <xs:element ref="gen_ReferenceValue"/>
-          <xs:element ref="gen_BigBenchReview"/>
+          <xs:element ref="gen_StaticValue"/>
+          <xs:element ref="gen_Template"/>
           <xs:element ref="gen_WeightedListItem"/>
-          <xs:element ref="gen_DictList"/>
-          <xs:element ref="gen_LongNumber"/>
+          <xs:element ref="gen_AddRandomSeconds"/>
+          <xs:element ref="gen_ConvertNumberToString"/>
+          <xs:element ref="gen_DateTime"/>
+          <xs:element ref="gen_ExtendedFormula"/>
+          <xs:element ref="gen_If"/>
+          <xs:element ref="gen_MaskString"/>
+          <xs:element ref="gen_PermutationReference"/>
+          <xs:element ref="gen_PrePostfix"/>
+          <xs:element ref="gen_Sequential"/>
+          <xs:element ref="gen_Switch"/>
         </xs:choice>
       </xs:sequence>
     </xs:complexType>

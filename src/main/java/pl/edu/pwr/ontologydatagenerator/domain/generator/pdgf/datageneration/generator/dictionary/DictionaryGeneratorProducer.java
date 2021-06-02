@@ -65,13 +65,13 @@ public class DictionaryGeneratorProducer implements DataPropertyGeneratorProduce
 
     private Optional<Map.Entry<Dictionary, Double>> findBestApllicableDictionary(DataPropertyGenerationContext context) {
         Predicate<Dictionary> fulfillsRestrictionsPredicate = dictionary -> restrictionsAreFulfilledByDictionary(dictionary, context);
-        return dictionaryService.findBestDictionary(context.getDataProperty(), context.getConcept(), getSupportedDataTypes(), fulfillsRestrictionsPredicate)
-                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= threeshold);
+        return dictionaryService.findBestDictionary(context.getDataProperty(), context.getConcept(), getSupportedDataTypes(), fulfillsRestrictionsPredicate);
     }
 
     @Override
     public boolean isApplicable(DataPropertyGenerationContext context) {
         return findBestApllicableDictionary(context)
+                .filter(scoreByDictionary -> scoreByDictionary.getValue() >= threeshold)
                 .isPresent();
     }
 
